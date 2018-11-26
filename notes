@@ -1,10 +1,18 @@
 gen clé pour chaque function
-choix taille des clés
-pavé en hexa
 conversion décimal / héxa
-historique (style bash ou visu)
-script (liste commandes) ?
-priorité bon fonctionnement / user friendly
 implem AES etc...
 SHA1, SHA2, SHA3
 RSA CRT, non CRT
+
+pavé en hexa
+choix taille des clés
+historique (style bash ou visu)
+
+priorité bon fonctionnement / user friendly
+BONUS : script (liste commandes) ?
+
+JF : Chiff AES, hexa
+Alexis : RSA mode CRT
+Hugo : MD5, SHA1, SHA2, SHA3
+JB : Déchiffrement AES, Gen KEY
+Kerfala : ?
