@@ -34,6 +34,71 @@
           </packing>
         </child>
         <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkComboBoxText">
+                <property name="width_request">163</property>
+                <property name="height_request">16</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <items>
+                  <item translatable="yes">HEX</item>
+                  <item translatable="yes">DEC</item>
+                </items>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText">
+                <property name="width_request">180</property>
+                <property name="height_request">16</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <items>
+                  <item translatable="yes">HEX</item>
+                  <item translatable="yes">DEC</item>
+                </items>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Convertir</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <signal name="clicked" handler="on_clicke_convert" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkTextView" id="Textbox">
             <property name="height_request">100</property>
             <property name="visible">True</property>
@@ -47,7 +112,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -67,11 +132,14 @@
                     <property name="height_request">45</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
                     <items>
                       <item translatable="yes">Chiffrement RSA</item>
                       <item translatable="yes">Dechiffrement RSA</item>
                       <item translatable="yes">Signature RSA</item>
                       <item translatable="yes">Vérification</item>
+                      <item translatable="yes">Génération de clés RSA</item>
                     </items>
                   </object>
                   <packing>
@@ -104,6 +172,8 @@
                     <items>
                       <item translatable="yes">MD5</item>
                       <item translatable="yes">SHA1</item>
+                      <item translatable="yes">SHA3</item>
+                      <item translatable="yes">H-MAC/MAC</item>
                     </items>
                   </object>
                   <packing>
@@ -138,7 +208,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -373,7 +443,7 @@
                 <property name="column_homogeneous">True</property>
                 <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">Génération de clés RSA</property>
+                    <property name="label" translatable="yes">Chiffrement AES	</property>
                     <property name="width_request">200</property>
                     <property name="height_request">39</property>
                     <property name="visible">True</property>
@@ -389,7 +459,7 @@
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">Chiffrement Symétrique</property>
+                    <property name="label" translatable="yes">Déchiffrement AES</property>
                     <property name="width_request">200</property>
                     <property name="height_request">39</property>
                     <property name="visible">True</property>
@@ -405,7 +475,7 @@
                 </child>
                 <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">H-MAC/MAC</property>
+                    <property name="label" translatable="yes">Génération clés AES</property>
                     <property name="width_request">200</property>
                     <property name="height_request">39</property>
                     <property name="visible">True</property>
@@ -474,7 +544,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">4</property>
           </packing>
         </child>
       </object>
