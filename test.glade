@@ -25,7 +25,7 @@
             <property name="height_request">130</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">calcul precedant</property>
+            <property name="label" translatable="yes">calcul précédent</property>
           </object>
           <packing>
             <property name="expand">False</property>
