@@ -2,7 +2,7 @@
 
 
 void initialiserK_valeurConstante(mpz_t k_values[65]){
-	int i ;
+	/*int i ;
 	FILE * fichier;
 	char * ligne = malloc (10 * sizeof(char));
 	fichier = fopen("k_64_constantes.txt","r");
@@ -16,8 +16,32 @@ void initialiserK_valeurConstante(mpz_t k_values[65]){
 	while (fgets(ligne,10,fichier) != NULL){
 		mpz_set_str(k_values[i],ligne,16);
 		i++;
-	}
+	}*/
 	//fclose(fichier);	  waou??
+	mpz_set_str(k_values[0],"428a2f98",16); mpz_set_str(k_values[1],"71374491",16); mpz_set_str(k_values[2],"b5c0fbcf",16); mpz_set_str(k_values[3],"e9b5dba5",16);
+	mpz_set_str(k_values[4],"3956c25b",16); mpz_set_str(k_values[5],"59f111f1",16); mpz_set_str(k_values[6],"923f82a4",16); mpz_set_str(k_values[7],"ab1c5ed5",16);
+	
+	mpz_set_str(k_values[8],"d807aa98",16); mpz_set_str(k_values[9],"12835b01",16); mpz_set_str(k_values[10],"243185be",16); mpz_set_str(k_values[11],"550c7dc3",16);
+	mpz_set_str(k_values[12],"72be5d74",16); mpz_set_str(k_values[13],"80deb1fe",16); mpz_set_str(k_values[14],"9bdc06a7",16); mpz_set_str(k_values[15],"c19bf174",16);
+
+	mpz_set_str(k_values[16],"e49b69c1",16); mpz_set_str(k_values[17],"efbe4786",16); mpz_set_str(k_values[18],"0fc19dc6",16); mpz_set_str(k_values[19],"240ca1cc",16);
+	mpz_set_str(k_values[20],"2de92c6f",16); mpz_set_str(k_values[21],"4a7484aa",16); mpz_set_str(k_values[22],"5cb0a9dc",16); mpz_set_str(k_values[23],"76f988da",16);
+
+	mpz_set_str(k_values[24],"983e5152",16); mpz_set_str(k_values[25],"a831c66d",16); mpz_set_str(k_values[26],"b00327c8",16); mpz_set_str(k_values[27],"bf597fc7",16);
+	mpz_set_str(k_values[28],"c6e00bf3",16); mpz_set_str(k_values[29],"d5a79147",16); mpz_set_str(k_values[30],"06ca6351",16); mpz_set_str(k_values[31],"14292967",16);
+
+    mpz_set_str(k_values[32],"27b70a85",16); mpz_set_str(k_values[33],"2e1b2138",16); mpz_set_str(k_values[34],"4d2c6dfc",16); mpz_set_str(k_values[35],"53380d13",16);
+	mpz_set_str(k_values[36],"650a7354",16); mpz_set_str(k_values[37],"766a0abb",16); mpz_set_str(k_values[38],"81c2c92e",16); mpz_set_str(k_values[39],"92722c85",16);
+	
+	mpz_set_str(k_values[40],"a2bfe8a1",16); mpz_set_str(k_values[41],"a81a664b",16); mpz_set_str(k_values[42],"c24b8b70",16); mpz_set_str(k_values[43],"c76c51a3",16);
+	mpz_set_str(k_values[44],"d192e819",16); mpz_set_str(k_values[45],"d6990624",16); mpz_set_str(k_values[46],"f40e3585",16); mpz_set_str(k_values[47],"106aa070",16);
+
+	mpz_set_str(k_values[48],"19a4c116",16); mpz_set_str(k_values[49],"1e376c08",16); mpz_set_str(k_values[50],"2748774c",16); mpz_set_str(k_values[51],"34b0bcb5",16);
+	mpz_set_str(k_values[52],"391c0cb3",16); mpz_set_str(k_values[53],"4ed8aa4a",16); mpz_set_str(k_values[54],"5b9cca4f",16); mpz_set_str(k_values[55],"682e6ff3",16);
+
+	mpz_set_str(k_values[56],"748f82ee",16); mpz_set_str(k_values[57],"78a5636f",16); mpz_set_str(k_values[58],"84c87814",16); mpz_set_str(k_values[59],"8cc70208",16);
+	mpz_set_str(k_values[60],"90befffa",16); mpz_set_str(k_values[61],"a4506ceb",16); mpz_set_str(k_values[62],"bef9a3f7",16); mpz_set_str(k_values[63],"c67178f2",16);
+
 }
 char * paddingChaine(char * chaine, int nombreDeBitsArespecter){
 	int decallage = (nombreDeBitsArespecter - strlen (chaine)); 

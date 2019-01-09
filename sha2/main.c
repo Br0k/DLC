@@ -45,7 +45,7 @@ int main (int argc, char **argv){
 			fonction_ch(ch,valeurH[4],valeurH[5],valeurH[6]);
 			mpz_add(tmp1,valeurH[7],sum1);
 			mpz_add(tmp1,tmp1,ch);
-			mpz_add(tmp1,tmp1,k_values[i+1]);
+			mpz_add(tmp1,tmp1,k_values[i]); //  
 			mpz_add(tmp1,tmp1,blockData[i]);
 			//***t2
 			//t

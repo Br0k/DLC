@@ -8,7 +8,7 @@ mpz_t a,b,c,d,e,f,g,h;
 mpz_t valeurH[8];
 mpz_t blockData[64]; //512 = 64 * 8 (un caractère) ==> sha 256
 
-mpz_t k_values[65]; // ?? indice 0
+mpz_t k_values[64]; // 
 
 char * chaineAtraiter;
 
