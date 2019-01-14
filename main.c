@@ -220,3 +220,7 @@ void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
   /* à ce callback provoquerait un segdefault! */
   gtk_widget_hide (dialog);
 }
+
+        
+
+

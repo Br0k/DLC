@@ -13,6 +13,6 @@ BONUS : script (liste commandes) ?
 
 JF : Chiff AES, hexa
 Alexis : RSA mode CRT
-Hugo : MD5, SHA1, SHA2, SHA3
+Hugo : MD5, SHA1
 JB : Déchiffrement AES, Gen KEY
-Kerfala : ?
+Kerfala : SHA2, SHA3 historique
