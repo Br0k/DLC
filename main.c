@@ -1,3 +1,6 @@
+#include "sha2/sha2.c"
+#include "sha2/fonctionSha2.c"
+#include "sha2/traitementSha2.c"
 
 #include <gtk/gtk.h>
 
@@ -11,24 +14,38 @@
 
       int main(int argc, char *argv [])
       {
-        GtkBuilder      *builder; 
-    GtkWidget       *window;
- 
-    gtk_init(&argc, &argv);
- 
-    builder = gtk_builder_new();
-    gtk_builder_add_from_file (builder, "test.glade", NULL);
- 
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
-    gtk_builder_connect_signals(builder, NULL);
- 
-    g_object_unref(builder);
- 
-    gtk_widget_show(window);                
-    gtk_main();
+            GtkBuilder      *builder; 
+	    GtkWidget       *window;
+	 
+	    gtk_init(&argc, &argv);
+	 
+	    builder = gtk_builder_new();
+	    gtk_builder_add_from_file (builder, "test.glade", NULL);
+	 
+	    window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
+	    gtk_builder_connect_signals(builder, NULL);
+	 
+	    g_object_unref(builder);
+	 
+	    gtk_widget_show(window); 
+	// sha2	
+	   GObject *button;
+	    button = gtk_builder_get_object (builder, "btn_lancer2");
+		
+   	   //g_signal_connect (button, "clicked", G_CALLBACK (sha2_appel()), NULL);
+	   
+	               
+    	  gtk_main();
  
     return 0;
       }
+	// sha2
+	void on_change_comboBox_Hash(GtkComboBox *combo){
+		printf("ddd");
+	}
+	void on_click_hash(GtkButton *button, GtkTextView *text_label){
+		printf("ddd");
+	}
       void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label)
       {
          
