@@ -302,7 +302,7 @@ void print_hex(char * msg) {
 char * Main_AES()
 {
 
-	//unsigned char * message="a";
+	//unsigned char * message="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 	unsigned char * message[16]={(uint8_t)0x00,(uint8_t)0x11,(uint8_t)0x22,(uint8_t)0x33,(uint8_t)0x44,(uint8_t)0x55,(uint8_t)0x66,(uint8_t)0x77,(uint8_t)0x88,(uint8_t)0x99,(uint8_t)0xaa,(uint8_t)0xbb,(uint8_t)0xcc,(uint8_t)0xdd,(uint8_t)0xee,(uint8_t)0xff};
 	//char key[16] = {43,126,21,22,40,174,210,166,171,247,21,136,9,207,79,60};
 	//char key[24] = {142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
