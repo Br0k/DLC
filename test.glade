@@ -15,7 +15,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="ConteneurGeneral">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
@@ -34,11 +34,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="Conteneurtest">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkComboBoxText">
+              <object class="GtkComboBoxText" id="comboBox1">
                 <property name="width_request">163</property>
                 <property name="height_request">16</property>
                 <property name="visible">True</property>
@@ -46,9 +46,11 @@
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <items>
-                  <item translatable="yes">HEX</item>
+                  <item id="2" translatable="yes"> </item>
                   <item translatable="yes">DEC</item>
+                  <item translatable="yes">HEX</item>
                 </items>
+                <signal name="changed" handler="ChangeCombo1" object="Textbox" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -65,9 +67,11 @@
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <items>
+                  <item translatable="yes"> </item>
                   <item translatable="yes">HEX</item>
                   <item translatable="yes">DEC</item>
                 </items>
+                <signal name="changed" handler="Changed_combo2" object="Textbox" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -76,14 +80,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="convert">
                 <property name="label" translatable="yes">Convertir</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
-                <signal name="clicked" handler="on_clicke_convert" swapped="no"/>
+                <signal name="clicked" handler="on_click_convert" object="Textbox" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -454,6 +458,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <signal name="clicked" handler="Encrypt_AES" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -493,33 +498,6 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFileChooserButton">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="title" translatable="yes"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">ECB/CBC</property>
-                    <property name="width_request">200</property>
-                    <property name="height_request">39</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton">
                     <property name="label" translatable="yes">Chiffrement/déchiffrement 
       fichier</property>
@@ -534,6 +512,41 @@
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFileChooserButton">
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">True</property>
+                    <property name="title" translatable="yes"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="comboBox2">
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <items>
+                      <item id="2" translatable="yes"> </item>
+                      <item translatable="yes">AES 128</item>
+                      <item translatable="yes">AES 192</item>
+                      <item translatable="yes">AES 256</item>
+                    </items>
+                    <signal name="changed" handler="Changed_AES" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
                   </packing>
                 </child>
               </object>
