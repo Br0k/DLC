@@ -16,7 +16,7 @@ typedef struct
   gpointer user_data;
 } SGlobalData;
 
-
+  
 
 int main(int argc, char *argv [])
 {
@@ -74,13 +74,13 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
    
   }
 
-  
+               
 }
 
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
   unsigned char * msg = Main_AES();
-  int len = strlen(msg);
+  int len = strlen(msg);              
   printf("%d\n", len);
   int * test;
   char lol[len];
@@ -106,19 +106,19 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 
    
   }
-}
+}  
 int hexadecimalToDecimal(char hexVal[]) 
 {    
     int len = strlen(hexVal); 
       
-    // Initializing base value to 1, i.e 16^0 
+    // Initializing base value to 1, i.e 16^0    
     int base = 1; 
       
     int dec_val = 0; 
       
     // Extracting characters as digits from last character 
     for (int i=len-1; i>=0; i--) 
-    {    
+    {      
 
         if (hexVal[i]>='0' && hexVal[i]<='9') 
         { 
@@ -126,12 +126,12 @@ int hexadecimalToDecimal(char hexVal[])
                   
             // incrementing base by power 
             base = base * 16; 
-        } 
+        }  
 
         else if (hexVal[i]>='A' && hexVal[i]<='F') 
-        { 
+        {   
             dec_val += (hexVal[i] - 55)*base; 
-          
+             
             // incrementing base by power 
             base = base*16; 
         } 
@@ -153,7 +153,7 @@ void on_click_convert(GtkButton *button,GtkTextView *text_label)
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
 
-
+  
   if(strcmp(Combobox1,Combobox2)!=0 && (strcmp(Combobox1,"DEC")==0 || strcmp(Combobox1,"HEX")==0))
   {
     //Pour convertir decimal to hexa
@@ -291,17 +291,18 @@ void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
   /* à ce callback provoquerait un segdefault! */
   gtk_widget_hide (dialog);
 }
-
-
-      
+     
+          
+        
 	// sha2
 	void on_change_comboBox_Hash(GtkComboBox *combo){
 		printf("ddd");
-	}
+	}    
 	void on_click_hash(GtkButton *button, GtkTextView *text_label){
 		printf("ddd");
-	}
+		printf("--> %s\n",sha2_appel());
+	}   
 
-      
-
+        
+  
 
