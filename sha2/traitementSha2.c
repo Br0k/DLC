@@ -2,25 +2,9 @@
 
 
 void initialiserK_valeurConstante(mpz_t k_values[64]){
-	/*int i ;
-	FILE * fichier;
-	char * ligne = malloc (10 * sizeof(char));
-	fichier = fopen("k_64_constantes.txt","r");
-	if (fichier == NULL){
-		printf("Erreur d'accès au fichier \n");
-		exit (0);
-	}
-	for (int j = 0 ; j < 65; j++)
-		mpz_init(k_values[j]);
-	i=1; // ??
-	while (fgets(ligne,10,fichier) != NULL){
-		mpz_set_str(k_values[i],ligne,16);
-		i++;
-	}*/
-	//fclose(fichier);	  waou??
+	
 	for (int i = 0; i < 64; i++)
 		mpz_init(k_values[i]);
-	printf("kkk");
 	mpz_set_str(k_values[0],"428a2f98",16); mpz_set_str(k_values[1],"71374491",16); mpz_set_str(k_values[2],"b5c0fbcf",16); mpz_set_str(k_values[3],"e9b5dba5",16);
 	mpz_set_str(k_values[4],"3956c25b",16); mpz_set_str(k_values[5],"59f111f1",16); mpz_set_str(k_values[6],"923f82a4",16); mpz_set_str(k_values[7],"ab1c5ed5",16);
 	
@@ -102,10 +86,8 @@ int tailleAallouer(int tailleMessage){
 		}while( taille_bloc - 9 < tailleMessage );	
 		return 512*k;
 	}
-	//return 0;
 }
 char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
-	printf("lala\n");
 	mpz_t donnee; 
 	int k = 1;
 	int taille = strlen(message);
@@ -117,16 +99,6 @@ char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	int taille_bloc = 64; // taille d'un bloc 64 * 8 = 512
 	chaineAtraiter ="";
 	mpz_init(donnee);
-	/*if ( taille_bloc - 9 >= taille)
-		chaineAtraiter = malloc(512 * sizeof(char));
-	else {
-		do{
-			k++;
-			taille_bloc  =k * 64;     // i * 1 block
-		}while( taille_bloc - 9 < taille );	
-		chaineAtraiter = malloc(k *512 *sizeof(char));
-	}*/
-	printf("%d -->\n",tailleAallouer(taille));
 	
 	chaineAtraiter = malloc(tailleAallouer(taille) * sizeof(char)); 
 	int t = tailleAallouer(taille);

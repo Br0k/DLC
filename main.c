@@ -8,7 +8,7 @@
 gchar * distro ;
 gchar * AES;
 gchar * Combobox1;
-gchar * Combobox2;
+gchar * Combobox2;    
 
 typedef struct
 {
@@ -47,7 +47,7 @@ int main(int argc, char *argv [])
   gtk_text_buffer_get_end_iter(buffer,&iter);
 
   if (gtk_combo_box_get_active (combo_box) != NULL) {
-    distro= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+    distro= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));    
     int i = gtk_combo_box_get_active(combo_box);
     Combobox2=distro;
    g_print ("You chose %d\n", i);
@@ -74,7 +74,7 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
    
   }
 
-               
+                  
 }
 
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
@@ -281,7 +281,7 @@ void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
 {
   /* Transtypage du pointeur user_data pour récupérer nos données. */
   SGlobalData *data = (SGlobalData*) user_data;
-  GtkWidget *dialog = NULL;
+  GtkWidget *dialog = NULL;          
 
   /* Récupération de la fenêtre "AboutWindow". */
   dialog =  GTK_WIDGET (gtk_builder_get_object (data->builder, "AboutWindow"));
