@@ -18,7 +18,7 @@ GTKLIB=`pkg-config --cflags --libs gtk+-3.0`
 
 # linker
 LD=gcc
-LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic -rdynamic
+LDFLAGS=$(PTHREAD) $(GTKLIB) -export-dynamic -rdynamic -lgmp
 
 OBJS=    main.o
 
