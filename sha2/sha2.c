@@ -1,45 +1,46 @@
 #include "tete.h"
 
+char *sha2_appel(){ // valeur du text box en paramètre
+	//*****************************************************
+	mpz_t a,b,c,d,e,f,g,h;
+	mpz_t valeurH[8];
+	mpz_t blockData[64]; //512 = 64 * 8 (un caractère) ==> sha 256
 
-// 
-//void sha2 (int argc, char **argv){
-void sha2_appel(){
-	
-	printf("SHA 2 ok\n");
+	mpz_t k_values[64]; // 
+	char * chaineAtraiter ;
+	char * chaine = malloc(64 * sizeof(char));
 	int nombreDetours;
 	mpz_t sum1,sum0,ch,maj,tmp1,tmp2,sig1,sig0;
+	//*****************************************************	
+	printf("SHA 2 ok\n");
+
 	mpz_inits(sum1,sum0,ch,maj,tmp1,tmp2,sig1,sig0,NULL);
-
 	mpz_inits(a,b,c,d,e,f,g,h,NULL);
-
-	char * chaine = malloc (32*sizeof(char));
 	initialiserHashStructure(valeurH);
 	initialiserK_valeurConstante(k_values);
-	// test ici (à enlever après)
-	//if (argc ==2 )
-	//	initialiserBlockData(argv[1]);
-	//else
-		initialiserBlockData("Groupe14");
+	
+	chaineAtraiter="";
+	chaineAtraiter = malloc( tailleAallouer(strlen("Groupe14")) * sizeof(char)); // textbox valeur
+	strcpy(chaineAtraiter,initialiserBlockData("Groupe14",blockData));
+
 	//initialiserBlockData("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
 	
 	nombreDetours  = strlen(chaineAtraiter)/512;
-
 	for (int j = 0 ; j < nombreDetours; j++ ){
-		copieConstante();
+		copieConstante(valeurH,a,b,c,d,e,f,g,h);
 		for (int i = 0; i < 16; i++)
 			recuppererBlockPartie(chaineAtraiter,i+(j*16),blockData[i]); //  512 Taille d'un bloc
 		for (int i = 16; i < 64; i++){
 			sigmaUn(sig1,blockData[i-2]);
 			sigmaZero(sig0,blockData[i-15]);
-			
+
 			mpz_add(blockData[i],sig1,sig0);
 			mpz_add(blockData[i],blockData[i],blockData[i-7]);
 			mpz_add(blockData[i],blockData[i],blockData[i-16]);
 			if (mpz_sizeinbase(blockData[i],16) > 8){
 				chaine = paddingChaine(mpz_get_str(chaine,16,blockData[i]),8);  //!!!   penser toujours à mettre en padding 32 bits 1 jour 
-				mpz_set_str(blockData[i],chaine,16);
-			}
-			
+				mpz_set_str(blockData[i],chaine,16);	
+			}	
 		}
 
 		for (int i = 0; i < 64; i++){
@@ -50,6 +51,7 @@ void sha2_appel(){
 			mpz_add(tmp1,tmp1,ch);
 			mpz_add(tmp1,tmp1,k_values[i]); //  
 			mpz_add(tmp1,tmp1,blockData[i]);
+			
 			//***t2
 			//t
 			fonction_sommeZero(sum0,valeurH[0]);
@@ -72,27 +74,24 @@ void sha2_appel(){
 			mpz_set(valeurH[1] , valeurH[0]);
 			if (mpz_sizeinbase(tmp2,16) > 8)
 				mpz_set_str(tmp2,paddingChaine(mpz_get_str(chaine,16,tmp2),8),16);
-			
-			mpz_set(valeurH[0],tmp2);
-
+			mpz_set(valeurH[0],tmp2);	
 		}
-		/*for (int i = 0; i < 8; i++)
-				gmp_printf("%s   ", mpz_get_str(chaine,16,valeurH[i]));
-		printf("\n");*/
-
-		nouvelleValeur();
-
-		/*printf("après\n");
-		for (int i = 0; i < 8; i++)
-				gmp_printf("%s   ", mpz_get_str(chaine,16,valeurH[i]));
-		printf("****\n");*/
+		nouvelleValeur(valeurH,a,b,c,d,e,f,g,h);
 
 	}
-	//exit(0);
-	/*printf( "sha2 256 **\n");
+	
+	printf( "sha2 256 **\n");
+	char *partie, *resultat;
+	partie = malloc(8 * sizeof(char));
+	resultat = malloc(64 * sizeof(char));
+	nettoyer(partie,8);
+	nettoyer(resultat,64);
+	
 	for (int i = 0; i < 8; i++){
-		gmp_printf("%s   ", mpz_get_str(chaine,16,valeurH[i]));
-	}*/
-
-	//return 0;
+		strcpy(partie,mpz_get_str(chaine,16,valeurH[i]));
+		printf("%s ",partie);
+		strcat(resultat,partie);
+	}
+	
+	return resultat;
 }

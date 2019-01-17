@@ -10,6 +10,7 @@
 gchar * distro ;
 gchar * AES;
 gchar * Combobox1;
+
 gchar * Combobox2;
 gchar * TypeAES;
 int lenAES;
@@ -24,7 +25,7 @@ typedef struct
   gpointer user_data;
 } SGlobalData;
 
-
+  
 
 int main(int argc, char *argv [])
 {
@@ -61,7 +62,7 @@ void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label)
   gtk_text_buffer_get_end_iter(buffer,&iter);
 
   if (gtk_combo_box_get_active (combo_box) != NULL) {
-    distro= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+    distro= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));    
     int i = gtk_combo_box_get_active(combo_box);
     Combobox2=distro;
     g_print ("You chose %d\n", i);
@@ -133,11 +134,12 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *text_label)
   }
  
 
-  
+                  
 }
 
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
+
   GtkTextBuffer *buffer;
   GtkTextIter iter,start,end;
   unsigned char* message;
@@ -224,19 +226,19 @@ void Changed_AES(GtkComboBox *comboBox)
     printf("%s et len %d\n",TypeAES,lenAES );
    
   }
-}
+}  
 int hexadecimalToDecimal(char hexVal[]) 
 {    
     int len = strlen(hexVal); 
       
-    // Initializing base value to 1, i.e 16^0 
+    // Initializing base value to 1, i.e 16^0    
     int base = 1; 
       
     int dec_val = 0; 
       
     // Extracting characters as digits from last character 
     for (int i=len-1; i>=0; i--) 
-    {    
+    {      
 
         if (hexVal[i]>='0' && hexVal[i]<='9') 
         { 
@@ -244,12 +246,12 @@ int hexadecimalToDecimal(char hexVal[])
                   
             // incrementing base by power 
             base = base * 16; 
-        } 
+        }  
 
         else if (hexVal[i]>='A' && hexVal[i]<='F') 
-        { 
+        {   
             dec_val += (hexVal[i] - 55)*base; 
-          
+             
             // incrementing base by power 
             base = base*16; 
         } 
@@ -271,7 +273,7 @@ void on_click_convert(GtkButton *button,GtkTextView *text_label)
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
 
-
+  
   if(strcmp(Combobox1,Combobox2)!=0 && (strcmp(Combobox1,"DEC")==0 || strcmp(Combobox1,"HEX")==0))
   {
     //Pour convertir decimal to hexa
@@ -425,7 +427,7 @@ void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
 {
   /* Transtypage du pointeur user_data pour récupérer nos données. */
   SGlobalData *data = (SGlobalData*) user_data;
-  GtkWidget *dialog = NULL;
+  GtkWidget *dialog = NULL;          
 
   /* Récupération de la fenêtre "AboutWindow". */
   dialog =  GTK_WIDGET (gtk_builder_get_object (data->builder, "AboutWindow"));
@@ -435,17 +437,18 @@ void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
   /* à ce callback provoquerait un segdefault! */
   gtk_widget_hide (dialog);
 }
-
-
-      
+     
+          
+        
 	// sha2
 	void on_change_comboBox_Hash(GtkComboBox *combo){
 		printf("ddd");
-	}
+	}    
 	void on_click_hash(GtkButton *button, GtkTextView *text_label){
 		printf("ddd");
-	}
+		printf("--> %s\n",sha2_appel());
+	}   
 
-      
-
+        
+  
 

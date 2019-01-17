@@ -1,23 +1,10 @@
 #include "tete.h"
 
 
-void initialiserK_valeurConstante(mpz_t k_values[65]){
-	/*int i ;
-	FILE * fichier;
-	char * ligne = malloc (10 * sizeof(char));
-	fichier = fopen("k_64_constantes.txt","r");
-	if (fichier == NULL){
-		printf("Erreur d'accès au fichier \n");
-		exit (0);
-	}
-	for (int j = 0 ; j < 65; j++)
-		mpz_init(k_values[j]);
-	i=1; // ??
-	while (fgets(ligne,10,fichier) != NULL){
-		mpz_set_str(k_values[i],ligne,16);
-		i++;
-	}*/
-	//fclose(fichier);	  waou??
+void initialiserK_valeurConstante(mpz_t k_values[64]){
+	
+	for (int i = 0; i < 64; i++)
+		mpz_init(k_values[i]);
 	mpz_set_str(k_values[0],"428a2f98",16); mpz_set_str(k_values[1],"71374491",16); mpz_set_str(k_values[2],"b5c0fbcf",16); mpz_set_str(k_values[3],"e9b5dba5",16);
 	mpz_set_str(k_values[4],"3956c25b",16); mpz_set_str(k_values[5],"59f111f1",16); mpz_set_str(k_values[6],"923f82a4",16); mpz_set_str(k_values[7],"ab1c5ed5",16);
 	
@@ -54,13 +41,18 @@ char * paddingChaine(char * chaine, int nombreDeBitsArespecter){
 		sprintf( resultat + i + decallage,"%c",chaine[i]);
 	return resultat;
 }
+void nettoyer(char * chaine,int taille){
+	for (int i = 0; i < taille; i++)
+		chaine[i] = '\0';
+}
 void recuppererBlockPartie(char *block, int position, mpz_t data){
 	mpz_init(data);
 	char * chaine = malloc (32*sizeof(char));
+	for ( int i = 0 ; i < 32; i++)  // nettoyer !! avant de commencer les opérations
+		chaine[i] = '\0';
 	int debut = position * 32;
 	for (int i = debut; i < debut+32; i++ )
 		sprintf(chaine,"%s%c",chaine,block[i]);
-		
 	mpz_set_str(data,chaine,2);
 }
 
@@ -81,32 +73,44 @@ void initialiserHashStructure(mpz_t valeurH[8]){
 
 }
 
-// reste à modifier blockData
-void initialiserBlockData(char* message){  // sha2
+// reste à modifier blockData;
+int tailleAallouer(int tailleMessage){
+	int k = 1;
+	int taille_bloc = 64;
+	if ( taille_bloc - 9 >= tailleMessage)
+		return 512;
+	else {
+		do{
+			k++;
+			taille_bloc  =k * 64;     // i * 1 block
+		}while( taille_bloc - 9 < tailleMessage );	
+		return 512*k;
+	}
+}
+char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	mpz_t donnee; 
 	int k = 1;
 	int taille = strlen(message);
 	int valeur_message_bit = taille *8;
 	char * elt = malloc(sizeof(char)) ;
-	char * chaine; 
+	char * chaine = malloc(64 *sizeof(char));
+	char * chaineAtraiter;
+
 	int taille_bloc = 64; // taille d'un bloc 64 * 8 = 512
 	chaineAtraiter ="";
 	mpz_init(donnee);
-	if ( taille_bloc - 9 >= taille)
-		chaineAtraiter = malloc(512 * sizeof(char));
-	else {
-		do{
-			k++;
-			taille_bloc  =k * 64;     // i * 1 block
-		}while( taille_bloc - 9 < taille );	
-		chaineAtraiter = malloc(k *512 *sizeof(char));
-	}
+	
+	chaineAtraiter = malloc(tailleAallouer(taille) * sizeof(char)); 
+	int t = tailleAallouer(taille);
+	for (int i = 0; i < t ; i++)
+		chaineAtraiter[i] = '\0';
 	// mets tous les caractères  recupe hexa puis mpz_t puis binary avec pading8 puis chaine
 	for (int i = 0 ; i < taille;i++){
 		sprintf(elt,"%02x",message[i]);
 		mpz_set_str(donnee,elt,16);
 		sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
 	}
+	
 	mpz_set_str(donnee,"80",16);// désigne fin message
 	sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
 
@@ -124,5 +128,6 @@ void initialiserBlockData(char* message){  // sha2
 		mpz_init(blockData[i]);    //globale
 	/*for (int i = 0 ; i < 16; i++)
 		recuppererBlockPartie(chaineAtraiter, i,blockData[i]);	*/
+	return chaineAtraiter;
 
 }
