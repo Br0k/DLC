@@ -88,6 +88,10 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
   }  
 }
 
+void import_path(GtkFileChooserButton *btn)
+{
+  char *path = gtk_file_chooser_get_filename(btn);
+}
 
 
 void printErreur(char *msg)
@@ -102,18 +106,20 @@ void printErreur(char *msg)
   gtk_widget_destroy (dialog);
 }
 
-void Dialog_click_Annuler(GtkButton *button)
+void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry)
 {
-
+  gtk_entry_set_text(entry,"");
+      gtk_entry_set_text(entry,"Entrer votre clés AES ...");
    gtk_widget_hide(dialog); 
 }
 
-void Dialog_click_Ok(GtkButton *button,GtkEntry *text_label)
+void Dialog_click_Ok(GtkButton *button,GtkEntry *entry)
 {
+  
   gchar *entry_text;
-  entry_text = gtk_entry_get_text (GTK_ENTRY (text_label));
-  printf ("Entry contents: %s\n", entry_text);
-  if(entry_text!=(lenAES*2)+23)
+  entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
+  printf ("Entry contents: %s et longueur: %d\n", entry_text,(lenAES*2)+23);
+  if(strlen(entry_text)!=(lenAES*2)+lenAES-1)
   {
     printErreur("Taille de clé incorrect !");
   }
@@ -129,8 +135,11 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *text_label)
       key[i]=tmp;
       printf("%02X ", (unsigned char) *(key+i));       
       entry_text = NULL;
-      gtk_widget_hide(dialog);
+      
     }
+    gtk_entry_set_text(entry,"");
+    gtk_entry_set_text(entry,"Entrer votre clés AES ...");
+    gtk_widget_hide(dialog);
   }
  
 
@@ -162,30 +171,45 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
        unsigned char *MsgToAES[16]; 
        unsigned char * cs;
       
-      for (int i = 0; (cs = strtok (message, " ")); i++)
+      for (int i = 0; (cs = strtok (message," ")); i++)
       {
-        printf("%s\n",cs );
         int tmp = hexadecimalToDecimal(cs); 
-        printf("%d\n",tmp );
         MsgToAES[i]=(uint8_t)tmp;
-        printf("%02X\n",MsgToAES[i] );        
-        message = NULL;
+        
+        message = NULL; 
+      }
+      printf("Avant AES\n");
+      for (int i = 0; i < 16; i++)
+      {
+        printf("%02X\n",MsgToAES[i] );
       }
        
-        //01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10
-        //6B C1 BE E2 2E 40 9F 96 E9 3D 7E 11 73 93 17 2A
-        //8E 73 B0 F7 DA 0E 64 52 C8 10 F3 2B 80 90 79 E5 62 F8 EA D2 52 2C 6B 7B
-        
+        /*01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10
+6B C1 BE E2 2E 40 9F 96 E9 3D 7E 11 73 93 17 2A
+8E 73 B0 F7 DA 0E 64 52 C8 10 F3 2B 80 90 79 E5 62 F8 EA D2 52 2C 6B 7B
+
+AES128
+
+2B 7E 15 16 28 AE D2 A6 AB F7 15 88 09 CF 4F 3C
+
+AES256
+
+60 3D EB 10 15 CA 71 BE 2B 73 AE F0 85 7D 77 81 1F 35 2C 07 3B 61 08 D7 2D 98 10 A3 09 14 DF F4
+    */    
         gtk_dialog_run(dialog);
 
         if(key!=NULL)
         {
           unsigned char * msg = Main_AES(TypeAES,MsgToAES,key);
+          for (int i = 0; i < strlen(msg); i++)
+          {
+            printf("%02X\n", msg[i]);
+          }
           int len = strlen(msg); 
-          printf("%d\n", len);
-          int * test;
-          char lol[len];
-          int tmp;
+          
+          int * msgEncrypt;
+          char tmp[len];
+          int decimal;
           int i;
           //Pour supprimer
           buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
@@ -194,13 +218,13 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
           //Pour ajouter
           buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
           gtk_text_buffer_get_end_iter(buffer,&iter);
-          for (int i = 0; i < len; ++i) 
+          for (int i = 0; i < len-1; ++i) 
           {
-            tmp=msg[i];
-            sprintf(lol,"%02X",tmp);
+            decimal=msg[i];
+            sprintf(tmp,"%02X",decimal);
             g_print ("You chose %d\n ",msg[i]);
-            char * test=strcat(lol," ");
-            gtk_text_buffer_insert(buffer,&iter,test,-1);
+            char * msgEncrypt=strcat(tmp," ");
+            gtk_text_buffer_insert(buffer,&iter,msgEncrypt,-1);
           }
          
           key=NULL;

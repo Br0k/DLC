@@ -196,7 +196,7 @@ char * AES_encrypt(unsigned char* message,unsigned char* expandedKeys,int Nr,int
   SuBytes(state);
   ShiftRows(state);
 
-  AddexpandedKeys(Nr, state, expandedKeys+192);
+  AddexpandedKeys(Nr, state, expandedKeys+(lenExpendKey-16));
 
 
   	char * enc_msg  = (char *) malloc(16);
@@ -311,19 +311,6 @@ char * Main_AES(char* AES,unsigned char **message,char * key)
 		lenAES=32;
 		lenExpendKey=240;
 	}
-	//unsigned char * message="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-	
-	/*unsigned char * msg[16]={(uint8_t)0x00,(uint8_t)0x11,(uint8_t)0x22,(uint8_t)0x33,(uint8_t)0x44,(uint8_t)0x55,(uint8_t)0x66,(uint8_t)0x77,(uint8_t)0x88,(uint8_t)0x99,(uint8_t)0xaa,(uint8_t)0xbb,(uint8_t)0xcc,(uint8_t)0xdd,(uint8_t)0xee,(uint8_t)0xff};
-	for (int i = 0; i < 16; ++i)
-	{
-		printf("Message : %02X\n", message[i]);
-		printf("Msg : %02X\n", msg[i]);
-	}*/
-	//char key[16] = {43,126,21,22,40,174,210,166,171,247,21,136,9,207,79,60};
-	//char key[24] = {142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
-	//char key[32]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
-	//01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
-	//char key[32]={96,61,235,16,21,202,113,190,43,115,174,240,133,125,119,129,31,53,44,7,59,97,8,215,45,152,16,163,9,20,223,244};
 
 	int len = strlen((const char*)message);
 	int lenPaddedMessage = 16;
@@ -366,11 +353,6 @@ char * Main_AES(char* AES,unsigned char **message,char * key)
 
 	}
 
-	
-	/*for (int i = 0; i < lenPaddedMessage; i++)
-	{
-		
-	}*/
 	
 	return enc_msg;
 }
