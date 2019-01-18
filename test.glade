@@ -242,9 +242,11 @@
                     <items>
                       <item translatable="yes">MD5</item>
                       <item translatable="yes">SHA1</item>
+                      <item translatable="yes">SHA2</item>
                       <item translatable="yes">SHA3</item>
                       <item translatable="yes">H-MAC/MAC</item>
                     </items>
+                    <signal name="changed" handler="hashList" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
