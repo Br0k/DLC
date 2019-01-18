@@ -17,7 +17,7 @@ gchar * TypeAES;
 int lenAES;
 GtkWidget *window;
 char *key;
-GtkWidget *dialog;
+GtkWidget *dialog_AES;
 
 
 typedef struct
@@ -39,7 +39,7 @@ int main(int argc, char *argv [])
   gtk_builder_add_from_file (builder, "test.glade", NULL);
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
-  dialog = GTK_WIDGET(gtk_builder_get_object(builder, "Dialog"));
+  dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
   gtk_window_set_transient_for(dialog,window);
   gtk_window_set_attached_to(window,dialog);
   gtk_builder_connect_signals(builder, NULL);
@@ -89,7 +89,6 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
   }  
 }
 
-<<<<<<< HEAD
 void import_path(GtkFileChooserButton *btn)
 {
   char *filename = gtk_file_chooser_get_filename(btn);
@@ -121,7 +120,7 @@ void import_path(GtkFileChooserButton *btn)
   fclose (file);
   unsigned char * chiffre = Main_AES(TypeAES,test,key,len);
 }
-=======
+
 void hashList(GtkComboBox *widget, GtkTextView *text_label)
 {
   GtkComboBox *combo_box = widget;
@@ -130,7 +129,6 @@ void hashList(GtkComboBox *widget, GtkTextView *text_label)
    int i;
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_end_iter(buffer,&iter);
->>>>>>> a220b98b00010c49106196184c041f6ce3238d83
 
   if (gtk_combo_box_get_active (combo_box) != NULL) {
     algo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
