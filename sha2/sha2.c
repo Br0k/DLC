@@ -1,6 +1,6 @@
 #include "tete.h"
 
-char *sha2_appel(){ // valeur du text box en paramètre
+char *sha2_appel(char *str){ // valeur du text box en paramètre
 	//*****************************************************
 	mpz_t a,b,c,d,e,f,g,h;
 	mpz_t valeurH[8];
@@ -12,7 +12,7 @@ char *sha2_appel(){ // valeur du text box en paramètre
 	int nombreDetours;
 	mpz_t sum1,sum0,ch,maj,tmp1,tmp2,sig1,sig0;
 	//*****************************************************	
-	printf("SHA 2 ok\n");
+	//printf("SHA 2 ok\n");
 
 	mpz_inits(sum1,sum0,ch,maj,tmp1,tmp2,sig1,sig0,NULL);
 	mpz_inits(a,b,c,d,e,f,g,h,NULL);
@@ -20,8 +20,8 @@ char *sha2_appel(){ // valeur du text box en paramètre
 	initialiserK_valeurConstante(k_values);
 	
 	chaineAtraiter="";
-	chaineAtraiter = malloc( tailleAallouer(strlen("Groupe14")) * sizeof(char)); // textbox valeur
-	strcpy(chaineAtraiter,initialiserBlockData("Groupe14",blockData));
+	chaineAtraiter = malloc( tailleAallouer(strlen(str)) * sizeof(char)); // textbox valeur
+	strcpy(chaineAtraiter,initialiserBlockData(str,blockData));
 
 	//initialiserBlockData("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
 	
@@ -80,7 +80,7 @@ char *sha2_appel(){ // valeur du text box en paramètre
 
 	}
 	
-	printf( "sha2 256 **\n");
+	//printf( "sha2 256 **\n");
 	char *partie, *resultat;
 	partie = malloc(8 * sizeof(char));
 	resultat = malloc(64 * sizeof(char));
@@ -89,7 +89,7 @@ char *sha2_appel(){ // valeur du text box en paramètre
 	
 	for (int i = 0; i < 8; i++){
 		strcpy(partie,mpz_get_str(chaine,16,valeurH[i]));
-		printf("%s ",partie);
+		//printf("%s ",partie);
 		strcat(resultat,partie);
 	}
 	
