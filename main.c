@@ -5,7 +5,7 @@
 
 #include <gtk/gtk.h>
 #include "AES.c"
-//#include "hashlib.c"
+#include "hashlib.c"
 
 
 gchar * distro ;
@@ -129,14 +129,12 @@ void import_path(GtkFileChooserButton *btn)
   unsigned char * chiffre = Main_AES(TypeAES,test,key,len);
 }
 
-void hashList(GtkComboBox *widget, GtkTextView *text_label)
+void hashList(GtkComboBox *widget)
 {
   GtkComboBox *combo_box = widget;
-  GtkTextBuffer *buffer;
-   GtkTextIter iter;
+
    int i;
-  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-  gtk_text_buffer_get_end_iter(buffer,&iter);
+  
 
   if (gtk_combo_box_get_active (combo_box) != NULL) {
     algo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
@@ -166,8 +164,10 @@ void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry)
    gtk_widget_hide(dialog_AES); 
 }
 
-void DialogHash_cancel(GtkButton *button){
+void DialogHash_cancel(GtkButton *button,GtkEntry *entry){
 
+  gtk_entry_set_text(entry,"");
+  gtk_entry_set_text(entry,"Entrer une clé : ");
 	gtk_widget_destroy(dialogHash);
 }
 
@@ -178,8 +178,9 @@ void DialogHash_send(GtkButton *button,GtkEntry *entry){
 	entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
 	hmacKey=malloc(strlen(entry_text));
 	strcpy(hmacKey,entry_text);
+  printf("%s\n",hmacKey );
 	gtk_entry_set_text(entry,"");
-    gtk_entry_set_text(entry,"Entrer une clé : ");
+  gtk_entry_set_text(entry,"Entrer une clé : ");
 	gtk_widget_hide(dialogHash);
 
 
@@ -535,6 +536,7 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
 	GtkTextBuffer *buffer;
 	GtkTextIter iter,start,end; 
 	char *input;
+   printf("cocuc\n");
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
 	gtk_text_buffer_get_start_iter(buffer, &start);
@@ -570,6 +572,7 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
 
 	if (strcmp(algo_value, "HMAC-SHA1") == 0){
 
+
 		gtk_dialog_run(dialogHash);
 
 		input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
@@ -577,6 +580,8 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
 
 		gtk_text_buffer_delete(buffer,&start,&end);
 		buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_get_start_iter(buffer, &start);
+  gtk_text_buffer_get_end_iter(buffer, &end);
 		gtk_text_buffer_insert(buffer,&end,hmac,-1);
 
     }
