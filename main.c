@@ -5,6 +5,7 @@
 
 #include <gtk/gtk.h>
 #include "AES.c"
+#include "hashlib.c"
 
 
 gchar * distro ;
@@ -14,10 +15,12 @@ gchar * Combobox1;
 gchar * Combobox2;
 gchar * algo_value;
 gchar * TypeAES;
+gchar *hmacKey;
 int lenAES;
 GtkWidget *window;
 char *key;
 GtkWidget *dialog;
+GtkWidget *dialogHash;
 
 
 typedef struct
@@ -40,8 +43,11 @@ int main(int argc, char *argv [])
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
   dialog = GTK_WIDGET(gtk_builder_get_object(builder, "Dialog"));
+  dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
   gtk_window_set_transient_for(dialog,window);
   gtk_window_set_attached_to(window,dialog);
+  gtk_window_set_transient_for(dialogHash,window);
+  gtk_window_set_attached_to(window,dialogHash);
   gtk_builder_connect_signals(builder, NULL);
 
 
@@ -89,7 +95,6 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
   }  
 }
 
-<<<<<<< HEAD
 void import_path(GtkFileChooserButton *btn)
 {
   char *filename = gtk_file_chooser_get_filename(btn);
@@ -121,7 +126,7 @@ void import_path(GtkFileChooserButton *btn)
   fclose (file);
   unsigned char * chiffre = Main_AES(TypeAES,test,key,len);
 }
-=======
+
 void hashList(GtkComboBox *widget, GtkTextView *text_label)
 {
   GtkComboBox *combo_box = widget;
@@ -130,7 +135,6 @@ void hashList(GtkComboBox *widget, GtkTextView *text_label)
    int i;
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_end_iter(buffer,&iter);
->>>>>>> a220b98b00010c49106196184c041f6ce3238d83
 
   if (gtk_combo_box_get_active (combo_box) != NULL) {
     algo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
@@ -156,8 +160,19 @@ void printErreur(char *msg)
 void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry)
 {
   gtk_entry_set_text(entry,"");
-      gtk_entry_set_text(entry,"Entrer votre clés AES ...");
+      gtk_entry_set_text(entry,"Entrer votre clé AES ...");
    gtk_widget_hide(dialog); 
+}
+
+void DialogHash_cancel(GtkButton *button){
+
+	gtk_widget_destroy(dialogHash);
+}
+
+void DialogHash_send(GtkButton *button,GtkEntry *entry){
+
+	hmacKey = gtk_entry_get_text (GTK_ENTRY (entry));
+	gtk_widget_hide(dialogHash);
 }
 
 void Dialog_click_Ok(GtkButton *button,GtkEntry *entry)
@@ -419,11 +434,6 @@ void generateAESKey(GtkButton *button,GtkTextView *text_label)
   
 }
 
-void test()
-{
-  printf("tet\n");
-}
-
 void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label)
 {
    
@@ -489,8 +499,6 @@ void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label)
       break;
     }
   }
-  
-
 
 }
 
@@ -511,15 +519,54 @@ void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
      
           
         
-	// sha2
-	void on_change_comboBox_Hash(GtkComboBox *combo){
-		printf("ddd");
-	}    
-	void on_click_hash(GtkButton *button, GtkTextView *text_label){
-		printf("ddd");
-		printf("--> %s\n",sha2_appel());
-	}   
+void on_click_hash(GtkButton *button, GtkTextView *text_label){
 
-        
-  
+	GtkTextBuffer *buffer;
+	GtkTextIter iter,start,end; 
+	char *input;
 
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	gtk_text_buffer_get_start_iter(buffer, &start);
+	gtk_text_buffer_get_end_iter(buffer, &end);
+
+	if (strcmp(algo_value, "MD5") == 0){
+		input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+		char* md5 = md5digest(input);
+
+		gtk_text_buffer_delete(buffer,&start,&end);
+		buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+		gtk_text_buffer_insert(buffer,&end,md5,-1);
+    }
+
+	if (strcmp(algo_value, "SHA1") == 0){
+		input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+		char* sha1 = sha1digest(input);
+
+		gtk_text_buffer_delete(buffer,&start,&end);
+		buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+		gtk_text_buffer_insert(buffer,&end,sha1,-1);
+    }
+
+    if (strcmp(algo_value, "SHA2") == 0){
+
+		input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+		char* sha2 = sha2_appel(input);
+
+		gtk_text_buffer_delete(buffer,&start,&end);
+		buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+		gtk_text_buffer_insert(buffer,&end,sha2,-1);
+    }
+
+	if (strcmp(algo_value, "HMAC-SHA1") == 0){
+
+		gtk_dialog_run(dialogHash);
+
+		input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+		char* hmac = hmac_sha1(hmacKey,input);
+
+		gtk_text_buffer_delete(buffer,&start,&end);
+		buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+		gtk_text_buffer_insert(buffer,&end,hmac,-1);
+
+    }
+}
