@@ -658,6 +658,7 @@
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <property name="title" translatable="yes"/>
+                    <signal name="file-set" handler="import_path" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>

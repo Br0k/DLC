@@ -170,9 +170,18 @@ void DialogHash_cancel(GtkButton *button){
 }
 
 void DialogHash_send(GtkButton *button,GtkEntry *entry){
+	gchar *entry_text;
+  	entry_text;
 
-	hmacKey = gtk_entry_get_text (GTK_ENTRY (entry));
+	entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
+	hmacKey=malloc(strlen(entry_text));
+	strcpy(hmacKey,entry_text);
+	gtk_entry_set_text(entry,"");
+    gtk_entry_set_text(entry,"Entrer une clé : ");
 	gtk_widget_hide(dialogHash);
+
+
+	
 }
 
 void Dialog_click_Ok(GtkButton *button,GtkEntry *entry)
