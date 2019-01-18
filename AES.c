@@ -284,11 +284,11 @@ void print_hex(char * msg) {
 }
 
 
-char * Main_AES(char* AES,unsigned char **message,char * key)
+char * Main_AES(char* AES,unsigned char **message,char * keys,int len)
 {
 	int Nk=0,Nb=4,Nr=0,lenExpendKey=0;
 	int lenAES=16;
-	//char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
+	char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
 	//char key[24]={142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
 
 	if(strcmp(AES,"AES 128")==0)
@@ -312,12 +312,14 @@ char * Main_AES(char* AES,unsigned char **message,char * key)
 		lenExpendKey=240;
 	}
 
-	int len = strlen((const char*)message);
-	int lenPaddedMessage = 16;
+	
+
+
+	int lenPaddedMessage = len;
 
 	uint8_t * enc_msg;
 	
-
+	printf("teteetet: %d\n",len);
 	if((len/2) %16 !=0)
 	{
 		lenPaddedMessage = (lenPaddedMessage/16 +1)*16;
@@ -327,8 +329,8 @@ char * Main_AES(char* AES,unsigned char **message,char * key)
 	unsigned char * paddedMessage=malloc(lenPaddedMessage);
 	for (int i = 0; i < lenPaddedMessage; i++)
 	{
-		if(i >= lenPaddedMessage)
-			paddedMessage[i]=0;
+		if(i >= len)
+			paddedMessage[i]=(uint8_t)0x00;
 		else
 			paddedMessage[i]=message[i];
 			

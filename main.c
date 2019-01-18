@@ -90,12 +90,39 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
 
 void import_path(GtkFileChooserButton *btn)
 {
-  char *path = gtk_file_chooser_get_filename(btn);
+  char *filename = gtk_file_chooser_get_filename(btn);
+  long len;
+  char * buf ;
+  printf("%s\n",filename );
+  
+  FILE * file = fopen(filename, "rb");
+
+  if (file)
+  {
+    fseek (file, 0, SEEK_END);
+    len = ftell (file);
+    fseek (file, 0, SEEK_SET);
+    buf = malloc (sizeof(char) * len);
+    if (buf)
+    {
+      fread (buf, 1, len, file);
+    }
+    
+  }
+  unsigned char *test[len];
+  for (int i = 0; i < len; i++) 
+  {
+   
+    test[i]=(uint8_t) *(buf+i);
+    printf("%02X\n",test[i] );
+  }
+  fclose (file);
+  unsigned char * chiffre = Main_AES(TypeAES,test,key,len);
 }
 
 
 void printErreur(char *msg)
-{
+{ 
   GtkWidget*  dialog;
   dialog = gtk_message_dialog_new (window,
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -105,7 +132,7 @@ void printErreur(char *msg)
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }
-
+ 
 void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry)
 {
   gtk_entry_set_text(entry,"");
@@ -180,7 +207,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
       }
       printf("Avant AES\n");
       for (int i = 0; i < 16; i++)
-      {
+      { 
         printf("%02X\n",MsgToAES[i] );
       }
        
@@ -200,7 +227,7 @@ AES256
 
         if(key!=NULL)
         {
-          unsigned char * msg = Main_AES(TypeAES,MsgToAES,key);
+          unsigned char * msg = Main_AES(TypeAES,MsgToAES,key,16);
           for (int i = 0; i < strlen(msg); i++)
           {
             printf("%02X\n", msg[i]);
