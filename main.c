@@ -8,10 +8,11 @@
 
 
 gchar * distro ;
+gchar * algo;
 gchar * AES;
 gchar * Combobox1;
-
 gchar * Combobox2;
+gchar * algo_value;
 gchar * TypeAES;
 int lenAES;
 GtkWidget *window;
@@ -88,7 +89,23 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
   }  
 }
 
+void hashList(GtkComboBox *widget, GtkTextView *text_label)
+{
+  GtkComboBox *combo_box = widget;
+  GtkTextBuffer *buffer;
+   GtkTextIter iter;
+   int i;
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+  gtk_text_buffer_get_end_iter(buffer,&iter);
 
+  if (gtk_combo_box_get_active (combo_box) != NULL) {
+    algo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+    int i = gtk_combo_box_get_active(combo_box);
+    algo_value = algo;
+   g_print ("You chose %s\n", algo);
+   
+  }  
+}
 
 void printErreur(char *msg)
 {
