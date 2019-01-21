@@ -284,11 +284,11 @@ void print_hex(char * msg) {
 }
 
 
-char * Main_AES(char* AES,unsigned char **message,char * keys,int len)
+uint8_t**  Main_AES(char* AES,unsigned char *message,char * key,int len)
 {
 	int Nk=0,Nb=4,Nr=0,lenExpendKey=0;
 	int lenAES=16;
-	char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
+	//char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
 	//char key[24]={142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
 
 	if(strcmp(AES,"AES 128")==0)
@@ -303,7 +303,6 @@ char * Main_AES(char* AES,unsigned char **message,char * keys,int len)
 		Nr=12;
 		lenAES=24;
 		lenExpendKey=208;
-		printf("AES 192\n");
 	}else
 	{
 		Nk=8;
@@ -311,28 +310,31 @@ char * Main_AES(char* AES,unsigned char **message,char * keys,int len)
 		lenAES=32;
 		lenExpendKey=240;
 	}
-
-	
-
-
+	print_hex(message);
 	int lenPaddedMessage = len;
-
-	uint8_t * enc_msg;
-	
-	printf("teteetet: %d\n",len);
-	if((len/2) %16 !=0)
+	if(lenPaddedMessage % 16 !=0)
 	{
 		lenPaddedMessage = (lenPaddedMessage/16 +1)*16;
 	}
 
+	uint8_t **enc_msg;
+	enc_msg=malloc(sizeof(uint8_t *)*lenPaddedMessage/16);
+
+	for (int i = 0; i < lenPaddedMessage/16; i++)
+	{
+		enc_msg[i]=malloc(sizeof(uint8_t*)*16);
+	}	
 	
 	unsigned char * paddedMessage=malloc(lenPaddedMessage);
+	printf("Len  msg %d\n", len);
 	for (int i = 0; i < lenPaddedMessage; i++)
 	{
-		if(i >= len)
+		if(i >= len)			
 			paddedMessage[i]=(uint8_t)0x00;
-		else
+		else{
+			printf("%02x  %02X\n",paddedMessage[i],message[i] );
 			paddedMessage[i]=message[i];
+		}
 			
 	}
 	char expandedKeys[lenExpendKey];
@@ -345,15 +347,17 @@ char * Main_AES(char* AES,unsigned char **message,char * keys,int len)
 		
 	//paddedMessage = IV ^ paddedMessage
 	printf("\nEncrypt message\n");
+	int pos=0;
 	for (int i = 0; i < lenPaddedMessage; i=i+16)
 	{		
 			printf("To AES\n");
 			print_hex(paddedMessage+i);
-			enc_msg = AES_encrypt(paddedMessage+i,expandedKeys,Nr,lenExpendKey);
+			enc_msg[pos] = AES_encrypt(paddedMessage+i,expandedKeys,Nr,lenExpendKey);
 			//paddedMessage+i = paddedMessage+i ^ enc_msg
-			print_hex(enc_msg);
+			pos++;
 
 	}
+
 
 	
 	return enc_msg;
