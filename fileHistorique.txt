@@ -1,0 +1,8 @@
+7
+	0089570fcc04579bee0b4c41de02c934(MD5)  =  39bc82cfbf484e8d9c7a000301f62dfe
+	39bc82cfbf484e8d9c7a000301f62dfe(MD5)  =  b2bcec3b7a61569ec834fea36748056c
+	554(MD5)  =  5e388103a391daabe3de1d76a6739ccd
+	87(DEC)  =  57 (HEX)
+	8(SHA1)  =  fe5dbbcea5ce7e2988b8c69bcfdfde8904aabc1f
+	98(MD5)  =  ed3d2c21991e3bef5e069713af9fa6ca
+	98 87 54 25 46 254 66 68(DEC)  =  62 57 36 19 2E FE 42 44 (HEX)
