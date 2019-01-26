@@ -21,8 +21,11 @@ char *filename;
 int lenAES;
 GtkWidget *window;
 char *key;
+unsigned char * IV=NULL;
 GtkWidget *dialog_AES;
-
+GtkWidget *dialog_AES_CBC;
+GtkEntry *Entry_AES_IV;
+GtkBuilder *builder;  
 GtkWidget *dialogHash;
 GtkWidget* label;
 File *maFile;
@@ -32,30 +35,33 @@ typedef struct
   GtkBuilder *builder;
   gpointer user_data;
 } SGlobalData;
-static void destroy( GtkWidget *widget)
-{
+static void destroy( GtkWidget *widget){
   stockageDansLefichier(maFile);  
   gtk_main_quit ();
-} 
+  g_object_unref(builder);} 
    
 
-int main(int argc, char *argv [])
-{  
+int main(int argc, char *argv []){
    
 
   gtk_init(&argc, &argv);
-  GtkBuilder *builder;  
   builder = gtk_builder_new();
   gtk_builder_add_from_file (builder, "test.glade", NULL);
 
   window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
 
   dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
+  dialog_AES_CBC = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES_CBC"));
   dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
   
   label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
+  
   gtk_window_set_transient_for(dialog_AES,window);
   gtk_window_set_attached_to(window,dialog_AES);
+
+  gtk_window_set_transient_for(dialog_AES_CBC,window);
+  gtk_window_set_attached_to(window,dialog_AES_CBC);
+
   gtk_window_set_transient_for(dialogHash,window);
   gtk_window_set_attached_to(window,dialogHash);
   gtk_builder_connect_signals(builder, NULL);
@@ -68,18 +74,15 @@ int main(int argc, char *argv [])
 
 
 
-  g_object_unref(builder);
+  
 
   gtk_widget_show(window);                
   gtk_main();
 
 
-  return 0;
-}
+  return 0;}
 
-
-void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label)
-{
+void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label){
   GtkComboBox *combo_box = widget;
   GtkTextBuffer *buffer;
   GtkTextIter iter;
@@ -92,11 +95,9 @@ void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label)
     int i = gtk_combo_box_get_active(combo_box);
     Combobox2=distro;
     g_print ("You chose %d\n", i);
-  }
-}
+  }}
 
-void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
-{
+void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label){
   GtkComboBox *combo_box = widget;
   GtkTextBuffer *buffer;
    GtkTextIter iter;
@@ -111,19 +112,14 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label)
    g_print ("You chose %s\n", distro);
 
    
-  }  
-}
+  }  }
 
-void import_path(GtkFileChooserButton *btn)
-{
+void import_path(GtkFileChooserButton *btn){
   filename = gtk_file_chooser_get_filename(btn);
   printf("%s\n",filename );
-  gtk_file_chooser_unselect_all(btn);
-  
-}
+  gtk_file_chooser_unselect_all(btn);}
 
-void hashList(GtkComboBox *widget)
-{
+void hashList(GtkComboBox *widget){
   GtkComboBox *combo_box = widget;
 
    int i;
@@ -135,11 +131,9 @@ void hashList(GtkComboBox *widget)
     algo_value = algo;
    g_print ("You chose %s\n", algo);
    
-  }  
-}
+  }  }
 
-void printErreur(char *msg)
-{ 
+void printErreur(char *msg){ 
   GtkWidget*  dialog;
   dialog = gtk_message_dialog_new (window,
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -147,22 +141,29 @@ void printErreur(char *msg)
                                   GTK_BUTTONS_CLOSE,
                                   msg);
   gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
-}
+  gtk_widget_destroy (dialog);}
  
-void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry)
-{
+void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry){
   gtk_entry_set_text(entry,"");
       gtk_entry_set_text(entry,"Entrer votre clé AES ...");
-   gtk_widget_hide(dialog_AES); 
+   gtk_widget_hide(dialog_AES); }
+
+void Dialog_AES_CBC_click_Annuler(GtkButton *button,GtkEntry *entry)
+{
+  gchar *entry_text_IV;
+  entry_text_IV = gtk_entry_get_text (GTK_ENTRY (Entry_AES_IV));
+  gtk_entry_set_text(entry,"");
+  gtk_entry_set_text(entry,"Entrer votre clé AES ...");
+  gtk_entry_set_text(entry_text_IV,"");
+  gtk_entry_set_text(entry_text_IV,"Entrer votre IV...");
+  gtk_widget_hide(dialog_AES_CBC);
 }
 
 void DialogHash_cancel(GtkButton *button,GtkEntry *entry){
 
   gtk_entry_set_text(entry,"");
   gtk_entry_set_text(entry,"Entrer une clé : ");
-  gtk_widget_destroy(dialogHash);
-}
+  gtk_widget_destroy(dialogHash);}
 
 void DialogHash_send(GtkButton *button,GtkEntry *entry){
   gchar *entry_text;
@@ -174,18 +175,12 @@ void DialogHash_send(GtkButton *button,GtkEntry *entry){
   printf("%s\n",hmacKey );
   gtk_entry_set_text(entry,"");
   gtk_entry_set_text(entry,"Entrer une clé : ");
-  gtk_widget_hide(dialogHash);
+  gtk_widget_hide(dialogHash);}
 
-
-  
-}
-
-void Dialog_click_Ok(GtkButton *button,GtkEntry *entry)
-{
+void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
   
   gchar *entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
-  printf ("Entry contents: %s et longueur: %d\n", entry_text,(lenAES*2)+23);
   if(strlen(entry_text)!=(lenAES*2)+lenAES-1)
   {
     printErreur("Taille de clé incorrect !");
@@ -196,7 +191,6 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry)
     char test[3];
     for (int i = 0; (cs = strtok (entry_text, " ")); i++)
     {
-      printf("%s\n",cs );
       int tmp = hexadecimalToDecimal(cs); 
       
       key[i]=tmp;
@@ -207,16 +201,58 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry)
     gtk_entry_set_text(entry,"");
     gtk_entry_set_text(entry,"Entrer votre clés AES ...");
     gtk_widget_hide(dialog_AES);
+  }}  
+
+void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
+  gchar *entry_text_key;
+  GtkEntry *Entry_AES_IV = GTK_WIDGET(gtk_builder_get_object(builder,"IV"));
+
+   entry_text_key = gtk_entry_get_text (GTK_ENTRY (Key_Entry));
+   printf("entry len: %d et len: %d\n",strlen(entry_text_key),(lenAES*2)+lenAES-1);
+  if(strlen(entry_text_key)!=(lenAES*2)+lenAES-1)
+  {
+    printErreur("Taille de clé incorrect !");
   }
- 
+  else{
+    key = malloc(lenAES);
+    char* cs;
+    char test[3];
+    for (int i = 0; (cs = strtok (entry_text_key, " ")); i++)
+    {
+      int tmp = hexadecimalToDecimal(cs); 
+      
+      key[i]=tmp;
+      printf("%02X ", (unsigned char) *(key+i));       
+      entry_text_key = NULL;
+      
+    }
+  }
+  gchar *entry_text_IV;
+   entry_text_IV = gtk_entry_get_text (GTK_ENTRY (Entry_AES_IV));
+   printf("%s\n",entry_text_IV );
+   IV = malloc(sizeof(char*)*16);
+    char* cs;
+    char test[3];
+    for (int i = 0; (cs = strtok (entry_text_IV, " ")); i++)
+    {
+      int tmp = hexadecimalToDecimal(cs); 
+      
+      IV[i]=tmp;
+      printf("%02X ", (unsigned char) *(IV+i));       
+      entry_text_IV = NULL;
+      
+    }
 
-                  
-}
+    gtk_entry_set_text(Key_Entry,"");
+    gtk_entry_set_text(Key_Entry,"Entrer votre clés AES ...");
+    gtk_entry_set_text(entry_text_IV,"");
+    gtk_entry_set_text(entry_text_IV,"Entrer votre IV...");
+    gtk_widget_hide(dialog_AES_CBC);}
 
-char * TraitementFile(char* mode,unsigned char ** chiffre,int lenght)
-{
-  long len;
-  char * buf ;
+char **  TraitementFile(char* mode,unsigned char ** chiffre,int lenght,int * lenPaddedMsg){
+  long len,lenPaddedMessage;
+  char **buf;
+  
   printf("%s\n",filename );
   FILE* file;
   if(strcmp(mode,"rb")==0)
@@ -226,17 +262,36 @@ char * TraitementFile(char* mode,unsigned char ** chiffre,int lenght)
     if (file){
       fseek (file, 0, SEEK_END);
       len = ftell (file);
+        if(len % 16 !=0)
+        {
+          lenPaddedMessage = (len/16 +1); 
+        }
+        *lenPaddedMsg=lenPaddedMessage;
+      printf("first len and len= %d %d\n",lenPaddedMessage,len );
       fseek (file, 0, SEEK_SET);
-      buf = malloc (sizeof(char) * len);
-      if (buf)
-        fread (buf, 1, len, file);
+      buf = malloc (sizeof(uint8_t*) * lenPaddedMessage);
+      for (int i = 0; i < lenPaddedMessage; i++)
+      {
+        buf[i]=malloc(sizeof(uint8_t*)*16);
+      }
+      int lenPadde = len/16+1;
+      for (int i = 0; i <= lenPadde; i++)
+      {
+        fgets(buf[i], 17, file);
+      }
+      int reste = len%16;
+      int last =lenPadde-1;
+
+      for (int i = reste; i < 16; i++)
+      {
+        //strcpy(buf[1][i],(uint8_t)0x00);
+        buf[last][i]=(uint8_t)0x00;
+ 
+      }
+
+      
     }
-    unsigned char *test[len];
-    for (int i = 0; i < len; i++){
-      test[i]=(uint8_t) *(buf+i);
-      printf("%02X\n",test[i] );
-    }
-  }
+  } 
   if(strcmp(mode,"w")==0)
   {
     file = fopen("Chiffre.enc", "w");
@@ -250,8 +305,19 @@ char * TraitementFile(char* mode,unsigned char ** chiffre,int lenght)
     }
   }
   fclose (file);
-  return buf;
-}
+  return buf;}
+
+GtkWidget * ReturnDialogAES(char * TypeAES){
+  GtkWidget * AESDialog;
+
+  if(strcmp("AES 128",TypeAES)==0 || strcmp("AES 192",TypeAES)==0 || strcmp("AES 256",TypeAES)==0)
+  {
+     AESDialog = dialog_AES;
+  }
+  else{
+     AESDialog = dialog_AES_CBC;
+  }
+  return AESDialog;}  
 
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
@@ -279,101 +345,103 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
     else{
       if(filename!=NULL && (strlen(message)==0))
       {
-        
-  
-        
-
-        char * clair = TraitementFile("rb",NULL,NULL);
+        int lenPaddedMessage;
+        char ** clair= TraitementFile("rb",NULL,NULL,&lenPaddedMessage);
+        printf("%d\n",lenPaddedMessage );
         if(key==NULL)
-          gtk_dialog_run(dialog_AES);
-        int len=strlen(clair);
-        int lenPaddedMessage=len;
-        if(lenPaddedMessage % 16 !=0)
         {
-          lenPaddedMessage = (lenPaddedMessage/16 +1)*16; 
+          GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
+          gtk_dialog_run(AESDialog); 
         }
         
         uint8_t **enc_msg;
-      
-         
-        enc_msg = Main_AES(TypeAES,clair,key,strlen(clair));
-        for (int i = 0; i < 4; i++)
+         for (int i = 0; i < lenPaddedMessage; i++)
         {
           for (int y = 0; y < 16; y++)
           {
-            printf("%02X",(unsigned char) *(enc_msg[i]+y) );
+            printf("%02X",(unsigned char) *(clair[i]+y) );
           }
           printf("\n");
         }
-          char * bu = TraitementFile("w",enc_msg,lenPaddedMessage/16);
-
-      
+        if(key!=NULL)
+        {
+          enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
+          char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL);
+        }      
       }else{
         if ((strlen(message)!=47))
           printErreur("La longueur du bloc doit etre de 16 !");
         else{
           //Fonction AES
-          unsigned char MsgToAES[16]; 
+          unsigned char **MsgToAES; 
           unsigned char * cs;
-
+          MsgToAES=malloc(sizeof(uint8_t*)*1);
+          MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
+     
 
           for (int i = 0; (cs = strtok (message," ")); i++)
           {
             int tmp = hexadecimalToDecimal(cs); 
-            MsgToAES[i]=(uint8_t)tmp;
+            MsgToAES[0][i]=(uint8_t)tmp;
             message = NULL; 
           }
           if(key==NULL)   
-            gtk_dialog_run(dialog_AES);
+          {
+            GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
+            gtk_dialog_run(AESDialog); 
+          }
           
           for (int i = 0; i < 16; ++i)
           {
-            printf("%02X\n",(unsigned char) *(MsgToAES+i) );
+            printf("%02X ",(unsigned char) (MsgToAES[0][i]) );
           }
-          uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,16);
-          char tmp[16];
-          int decimal;
-          char msgEncrypt[16];
-          //Pour supprimer
-          buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-          gtk_text_buffer_get_end_iter(buffer,&end);
-          gtk_text_buffer_delete(buffer,&start,&end);
-          //Pour ajouter
-          buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-          gtk_text_buffer_get_end_iter(buffer,&end);
-          
-          for (int i = 0; i < 16; ++i) 
+          if (key != NULL)
           {
-            decimal=msg[0][i];
-            sprintf(tmp,"%02X",decimal);
-            g_print ("You chose %d\n ",msg[0][i]);
-            char * msgEncrypt= strcat(tmp," ");
-            strcat(result_history,tmp);
+            uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,1,IV);
+            char tmp[16];
+            int decimal;
+            char msgEncrypt[16];
+            //Pour supprimer
+            buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+            gtk_text_buffer_get_end_iter(buffer,&end);
+            gtk_text_buffer_delete(buffer,&start,&end);
+            //Pour ajouter
+            buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+            gtk_text_buffer_get_end_iter(buffer,&end);
+            
+            for (int i = 0; i < 16; ++i) 
+            {
+              decimal=msg[0][i];
+              sprintf(tmp,"%02X",decimal);
+              g_print ("You chose %d\n ",msg[0][i]);
+              char * msgEncrypt= strcat(tmp," ");
+              strcat(result_history,tmp);
 
-            gtk_text_buffer_insert(buffer,&end,msgEncrypt,-1); 
-          }
-          char temp[1024];
-          
-          Historique(history,result_history,TypeAES,NULL);
+              gtk_text_buffer_insert(buffer,&end,msgEncrypt,-1); 
+            }
+            char temp[1024];            
+            Historique(history,result_history,TypeAES,NULL);
 
-          key=NULL;
-          free(key);
+          }         
         }
       }
+        key=NULL;
+        IV=NULL;
+        free(IV);
+        free(key);
     } 
   }
 }
 
 
-void Changed_AES(GtkComboBox *comboBox)
-{
+void Changed_AES(GtkComboBox *comboBox){
   if (gtk_combo_box_get_active (comboBox) != NULL) {
     TypeAES= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(comboBox));
    
 
-    if(strcmp(TypeAES,"AES 128")==0)
+    if(strcmp(TypeAES,"AES 128")==0 || strcmp(TypeAES,"AES 128 CBC")==0)
       lenAES=16;
-    else if (strcmp(TypeAES,"AES 192")==0)
+    else if (strcmp(TypeAES,"AES 192")==0 || strcmp(TypeAES,"AES 192 CBC")==0)
       lenAES=24;
     else
       lenAES=32;
@@ -381,10 +449,9 @@ void Changed_AES(GtkComboBox *comboBox)
 
     printf("%s et len %d\n",TypeAES,lenAES );
    
-  }
-}  
-int hexadecimalToDecimal(char hexVal[]) 
-{    
+  }}  
+
+int hexadecimalToDecimal(char hexVal[]) {
     int len = strlen(hexVal); 
       
     // Initializing base value to 1, i.e 16^0    
@@ -413,11 +480,9 @@ int hexadecimalToDecimal(char hexVal[])
         } 
     } 
       
-    return dec_val; 
-} 
+    return dec_val; } 
 
-void on_click_convert(GtkButton *button,GtkTextView *text_label)
-{
+void on_click_convert(GtkButton *button,GtkTextView *text_label){
   GtkTextBuffer *buffer;
   GtkTextIter iter,start,end;
   char* msg,*hist;
@@ -477,11 +542,9 @@ void on_click_convert(GtkButton *button,GtkTextView *text_label)
       
     }
   }
-  Historique(hist,msgconvert,Combobox1,Combobox2);
-}
+  Historique(hist,msgconvert,Combobox1,Combobox2);}
 
-void generateAESKey(GtkButton *button,GtkTextView *text_label)
-{
+void generateAESKey(GtkButton *button,GtkTextView *text_label){
   if(TypeAES==NULL)
     printErreur("Vous devez choisir votre AES !");
   else{
@@ -510,13 +573,9 @@ void generateAESKey(GtkButton *button,GtkTextView *text_label)
     }
     printf("%s\n",AESKey );
 
-  }
-  
-  
-}
+  }}
 
-void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label)
-{
+void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label){
    
   GtkTextBuffer *buffer;
   gchar* msg;
@@ -579,26 +638,7 @@ void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label)
       gtk_text_buffer_insert(buffer,&iter,"9",-1);
       break;
     }
-  }
-
-}
-
-void  callback_about (GtkMenuItem *menuitem, gpointer user_data)
-{
-  /* Transtypage du pointeur user_data pour récupérer nos données. */
-  SGlobalData *data = (SGlobalData*) user_data;
-  GtkWidget *dialog = NULL;          
-
-  /* Récupération  de la fenêtre "AboutWindow". */
-  dialog =  GTK_WIDGET (gtk_builder_get_object (data->builder, "AboutWindow"));
-  gtk_dialog_run (GTK_DIALOG (dialog));
-
-  /* On cache la fenêtre de dialogue. Si on la détruisait le prochain appel */
-  /* à ce callback provoquerait un segdefault! */
-  gtk_widget_hide (dialog);
-}
-     
-          
+  }}      
         
 void on_click_hash(GtkButton *button, GtkTextView *text_label){
 
@@ -656,16 +696,9 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
     
     }
     char tmp[1024];
-    Historique(input,hash,algo_value,NULL);
-    
+    Historique(input,hash,algo_value,NULL);}
 
-
-}
-
-
-
-void Historique(char* op1,char* op2,char* type,char * type2)
-{
+void Historique(char* op1,char* op2,char* type,char * type2){
 
   int taille =SizeFile(maFile);
   printf("%d\n", taille);
@@ -684,6 +717,4 @@ void Historique(char* op1,char* op2,char* type,char * type2)
   else  
    enfiler(maFile,tmp);
 
-  afficherFile(maFile,label);
-  
-}       
+  afficherFile(maFile,label);}       
