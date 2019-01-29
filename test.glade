@@ -127,7 +127,7 @@
           <object class="GtkEntry" id="Key1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre clés AES ...</property>
+            <property name="text" translatable="yes">Entrer votre clé AES ...</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -283,7 +283,7 @@
                   <item translatable="yes">DEC</item>
                   <item translatable="yes">HEX</item>
                 </items>
-                <signal name="changed" handler="ChangeCombo1" object="Textbox" swapped="no"/>
+                <signal name="changed" handler="ComboBoxConvertisseurGauche" object="Textbox" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -304,7 +304,7 @@
                   <item translatable="yes">HEX</item>
                   <item translatable="yes">DEC</item>
                 </items>
-                <signal name="changed" handler="Changed_combo2" object="Textbox" swapped="no"/>
+                <signal name="changed" handler="ComboBoxConvertisseurDroite" object="Textbox" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -326,6 +326,20 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="ConvertHexa">
+                <property name="label" translatable="yes">Convertir en Héxadécimal</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="convertHexadecimal" object="Textbox" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>

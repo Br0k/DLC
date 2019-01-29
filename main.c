@@ -1,16 +1,24 @@
-#include "sha2/sha2.c"
-#include "sha2/fonctionSha2.c"
-#include "sha2/traitementSha2.c"
-#include "historique/main_historique.c"
-#include <gmp.h>
+//fonction SHA2
+#include "hash/sha2.c"
+#include "hash/fonctionSha2.c"
+#include "hash/traitementSha2.c"
+#include "hash/hashlib.c"
 
-#include <gtk/gtk.h>
+//historique
+#include "historique/main_historique.c"
+
+//fonction AES
 #include "AES/AES_encrypt.c"
 #include "AES/AES_decrypt.c"
-#include "hashlib.c"
+
+//includes de base
+
+#include <gmp.h>
+#include <gtk/gtk.h>
 
 
-gchar * distro ;
+
+gchar * distro;
 gchar * algo;
 gchar * AES;
 gchar * Combobox1;
@@ -136,7 +144,8 @@ int main(int argc, char *argv []){
 
   return 0;}
 
-void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label){
+/* Combo box convertisseur Hexa Decimal droite */
+void ComboBoxConvertisseurDroite(GtkComboBox *widget, GtkTextView *text_label){
   GtkComboBox *combo_box = widget;
   GtkTextBuffer *buffer;
   GtkTextIter iter;
@@ -154,7 +163,9 @@ void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label){
   }
 }
 
-void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label){
+
+/*Combo box convertisseur Hexa Decimal gauche */
+void ComboBoxConvertisseurGauche(GtkComboBox *widget, GtkTextView *text_label){
   GtkComboBox *combo_box = widget;
   GtkTextBuffer *buffer;
   GtkTextIter iter;
@@ -165,10 +176,10 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label){
   index = gtk_combo_box_get_active (GTK_COMBO_BOX(combo_box));
 
   if (index != -1) {
-    distro= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+    distro = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
     int i = gtk_combo_box_get_active(combo_box);
     Combobox1 = distro;
-   g_print ("You chose %s ; %d\n", distro, i);
+    g_print ("You chose %s ; %d\n", distro, i);
 
   } 
 }
@@ -380,6 +391,8 @@ GtkWidget * ReturnDialogAES(char * TypeAES){
   }
   return AESDialog;
 }  
+
+
 
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
@@ -632,7 +645,41 @@ void Changed_AES(GtkComboBox *comboBox){
 
     printf("%s et len %d\n",TypeAES,lenAES );
    
-  }}  
+  }
+}  
+
+
+char* get_text_of_textview(GtkWidget *text_view) {
+    GtkTextIter start, end;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer((GtkTextView *)text_view);
+    gchar *text;
+    gtk_text_buffer_get_bounds(buffer, &start, &end);
+    text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+    return text;
+}
+
+void convertHexadecimal(GtkButton* button, GtkTextView* text_label){
+  GtkTextBuffer *buffer;
+  GtkTextIter start,end;
+
+  char* hexadecimal;
+  /*
+  char* decimal;
+  char* historique;
+  char *token;
+
+  
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+  gtk_text_buffer_get_start_iter(buffer, &start);
+  gtk_text_buffer_get_end_iter(buffer, &end);
+  hexadecimal=gtk_text_buffer_get_text(buffer,&start,&end,-1);
+  historique=malloc(sizeof(char*)*sizeof(hexadecimal));
+  strcpy(historique,hexadecimal);
+  */
+  hexadecimal = get_text_of_textview(GTK_WIDGET(text_label));
+  printf("Chaine hexadecimale : %s\n",hexadecimal );
+}
+
 
 
 
