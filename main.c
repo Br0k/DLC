@@ -55,15 +55,7 @@ int main(int argc, char *argv []){
   dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
   
   label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
-  
-  gtk_window_set_transient_for(dialog_AES,window);
-  gtk_window_set_attached_to(window,dialog_AES);
-
-  gtk_window_set_transient_for(dialog_AES_CBC,window);
-  gtk_window_set_attached_to(window,dialog_AES_CBC);
-
-  gtk_window_set_transient_for(dialogHash,window);
-  gtk_window_set_attached_to(window,dialogHash);
+ 
   gtk_builder_connect_signals(builder, NULL);
 
   maFile = initialiser();
@@ -110,9 +102,9 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label){
   }  }
 
 void import_path(GtkFileChooserButton *btn){
-  filename = gtk_file_chooser_get_filename(btn);
+  filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (btn));
   printf("%s\n",filename );
-  gtk_file_chooser_unselect_all(btn);}
+  gtk_file_chooser_unselect_all(GTK_FILE_CHOOSER (btn));}
 
 void hashList(GtkComboBox *widget){
   GtkComboBox *combo_box = widget;
@@ -244,6 +236,16 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
     gtk_entry_set_text(entry_text_IV,"Entrer votre IV...");
     gtk_widget_hide(dialog_AES_CBC);}
 
+char ** InitTableau(char ** tab,int size)
+{
+  tab = malloc (sizeof(uint8_t*) * size);
+  for (int i = 0; i < size; i++)
+  {
+    tab[i]=malloc(sizeof(uint8_t*)*16);
+  }
+  return tab;
+}  
+
 char **  TraitementFile(char* mode,unsigned char ** chiffre,int lenght,int * lenPaddedMsg){
   long len,lenPaddedMessage;
   char **buf;
@@ -257,18 +259,12 @@ char **  TraitementFile(char* mode,unsigned char ** chiffre,int lenght,int * len
     if (file){
       fseek (file, 0, SEEK_END);
       len = ftell (file);
-        if(len % 16 !=0)
-        {
-          lenPaddedMessage = (len/16 +1); 
-        }
-        *lenPaddedMsg=lenPaddedMessage;
-      printf("first len and len= %d %d\n",lenPaddedMessage,len );
+      if(len % 16 !=0)
+        lenPaddedMessage = (len/16 +1); 
+
+      *lenPaddedMsg=lenPaddedMessage;
       fseek (file, 0, SEEK_SET);
-      buf = malloc (sizeof(uint8_t*) * lenPaddedMessage);
-      for (int i = 0; i < lenPaddedMessage; i++)
-      {
-        buf[i]=malloc(sizeof(uint8_t*)*16);
-      }
+      buf = InitTableau(buf,lenPaddedMessage);
       int lenPadde = len/16+1;
       for (int i = 0; i <= lenPadde; i++)
       {
@@ -314,6 +310,30 @@ GtkWidget * ReturnDialogAES(char * TypeAES){
   }
   return AESDialog;}  
 
+
+char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,GtkTextView *text_label,int size){
+  int decimal;
+  char * result_history;
+  result_history=(char *)calloc(size,sizeof(char*));
+  char tmp[16],msgEncrypt[16];
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+  gtk_text_buffer_get_end_iter(buffer,&end);
+
+  for (int i = 0; i < 16; ++i) 
+  {
+    decimal=msg[0][i];
+    sprintf(tmp,"%02X",decimal);
+    g_print ("You chose %d\n ",msg[0][i]);
+    char * msgEncrypt= strcat(tmp," ");
+    strcat(result_history,tmp);
+
+    gtk_text_buffer_insert(buffer,&end,msgEncrypt,-1); 
+  }
+  return result_history;
+
+}
+
+
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
 
@@ -321,14 +341,14 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
   GtkTextIter iter,start,end;
   unsigned char* message;
   char * history;
-  char * result_history;
+
   //ON recupere le message dans la textBox si il est pas trop grand
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
   message=gtk_text_buffer_get_text(buffer,&start,&end,-1);
   history=malloc(sizeof(char*)*sizeof(message));
-  result_history=(char *)calloc(sizeof(message),sizeof(char*));
+  
 
   strcpy(history,message);
 
@@ -347,17 +367,9 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
         {
           GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
           gtk_dialog_run(AESDialog); 
-        }
-        
+        }        
         uint8_t **enc_msg;
-         for (int i = 0; i < lenPaddedMessage; i++)
-        {
-          for (int y = 0; y < 16; y++)
-          {
-            printf("%02X",(unsigned char) *(clair[i]+y) );
-          }
-          printf("\n");
-        }
+         
         if(key!=NULL)
         {
           enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
@@ -401,20 +413,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
             gtk_text_buffer_get_end_iter(buffer,&end);
             gtk_text_buffer_delete(buffer,&start,&end);
             //Pour ajouter
-            buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-            gtk_text_buffer_get_end_iter(buffer,&end);
-            
-            for (int i = 0; i < 16; ++i) 
-            {
-              decimal=msg[0][i];
-              sprintf(tmp,"%02X",decimal);
-              g_print ("You chose %d\n ",msg[0][i]);
-              char * msgEncrypt= strcat(tmp," ");
-              strcat(result_history,tmp);
-
-              gtk_text_buffer_insert(buffer,&end,msgEncrypt,-1); 
-            }
-            char temp[1024];            
+            char *result_history=Afficher_AES_Label(buffer,end,msg,text_label,sizeof(message));
             Historique(history,result_history,TypeAES,NULL);
 
           }         
@@ -427,6 +426,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
     } 
   }
 }
+
 
 
 void Changed_AES(GtkComboBox *comboBox){
