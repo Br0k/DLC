@@ -856,7 +856,6 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
   GtkTextIter start,end; 
   char *input;
   char* hash;
-  printf("cocuc\n");
 
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_start_iter(buffer, &start);
@@ -908,5 +907,42 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
   
   //char tmp[1024];
   Historique(input,hash,algo_value,NULL);
+}
+
+char* readFile(FILE* file){
+  file = fopen(filename, "rb");
+  long len;
+    char * buf = 0;
+
+  if (file)
+  {
+    fseek (file, 0, SEEK_END);
+    len = ftell (file);
+    fseek (file, 0, SEEK_SET);
+    buf = malloc (sizeof(char) * len);
+    if (buf)
+    {
+      fread (buf, 1, len, file);
+    }
+    fclose (file);
+  }
+
+  if (buf){
+    return buf;
+  }
+}
+
+void on_hash_file(GtkButton *button, GtkTextView *text_label){
+
+  GtkTextBuffer * buffer;
+  GtkTextIter start,end; 
+  char *input =readFile(filename);
+  char *md5 = md5digest(input);
+
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+  gtk_text_buffer_get_start_iter(buffer, &start);
+  gtk_text_buffer_get_end_iter(buffer, &end);
+  gtk_text_buffer_delete(buffer,&start,&end);
+  gtk_text_buffer_insert(buffer,&end,md5,-1);
 }
 
