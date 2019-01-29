@@ -49,20 +49,22 @@ char * shR(char * chaine,int nombreRotation ){
 // fonction rot et shr
 void complementBinaire(mpz_t rop,mpz_t x){
 	char *resultat = malloc(32* sizeof(char));
-	char * chaine = malloc (32* sizeof(char));
+	char *chaine = malloc (32* sizeof(char));
 	chaine = paddingChaine(mpz_get_str(chaine,2,x),32);
 	for (int i = 0; i < 32 ; i++){
 		if (chaine[i] == '1')
-			sprintf(resultat,"%s%c",resultat,'0');
+			strcat(resultat,"0");
+			//sprintf(resultat,"%s%c",resultat,'0');
 		else
-			sprintf(resultat,"%s%c",resultat,'1');
+			strcat(resultat,"1");
+			//sprintf(resultat,"%s%c",resultat,'1');
 
 	}
 	mpz_set_str(rop,resultat,2);
 }
 
 void fonction_ch(mpz_t rop,mpz_t x,mpz_t y,mpz_t z){
-	char *chaine= malloc(32*sizeof(char));	
+	//char *chaine= malloc(32*sizeof(char));	
 	mpz_t temp1,temp2;
 	mpz_inits(temp1,temp2,NULL);
 	mpz_and(temp1,x,y);
@@ -72,7 +74,7 @@ void fonction_ch(mpz_t rop,mpz_t x,mpz_t y,mpz_t z){
 
 }
 void fonction_Maj(mpz_t rop,mpz_t x,mpz_t y,mpz_t z){
-	char * chaine = malloc(32*sizeof(char));
+	//char * chaine = malloc(32*sizeof(char));
 	mpz_t temp1,temp2,temp3;
 	mpz_inits(temp1,temp2,temp3,NULL);
 	mpz_and(temp1,x,y);
