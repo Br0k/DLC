@@ -789,6 +789,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <signal name="clicked" handler="on_hash_file" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
