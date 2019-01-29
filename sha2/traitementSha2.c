@@ -47,19 +47,25 @@ void nettoyer(char * chaine,int taille){
 }
 void recuppererBlockPartie(char *block, int position, mpz_t data){
 	mpz_init(data);
-	char * chaine = malloc (32*sizeof(char));
+	char* chaine = malloc (32*sizeof(char));
 	for ( int i = 0 ; i < 32; i++)  // nettoyer !! avant de commencer les opérations
 		chaine[i] = '\0';
 	int debut = position * 32;
+	
+
 	for (int i = debut; i < debut+32; i++ )
-		sprintf(chaine,"%s%c",chaine,block[i]);
+		//sprintf(chaine,"%s%c",chaine,block[i]);
+		//strcat(chaine,(char *)block[i]);
+		chaine[strlen(chaine)]= block[i];
+	//strncat(chaine,(char *)block[debut],32);
+
 	mpz_set_str(data,chaine,2);
 }
 
 
 void initialiserHashStructure(mpz_t valeurH[8]){
 	//printf("1");
-	char * chaine = malloc(32 * sizeof(char));
+	//char * chaine = malloc(32 * sizeof(char));
 	for (int i = 0 ; i < 8; i++)
 		mpz_init(valeurH[i]);
 	mpz_set_str(valeurH[0],"6a09e667",16);
@@ -89,7 +95,7 @@ int tailleAallouer(int tailleMessage){
 }
 char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	mpz_t donnee; 
-	int k = 1;
+	//int k = 1;
 	int taille = strlen(message);
 	int valeur_message_bit = taille *8;
 	char * elt = malloc(sizeof(char)) ;
@@ -108,20 +114,23 @@ char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	for (int i = 0 ; i < taille;i++){
 		sprintf(elt,"%02x",message[i]);
 		mpz_set_str(donnee,elt,16);
-		sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
+		//sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
+		strcat(chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee),8));
 	}
 	
 	mpz_set_str(donnee,"80",16);// désigne fin message
-	sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
+	//sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
+	strcat(chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee),8));
 
 	for (int i = taille +1; i < taille_bloc - 8; i++){  //i < 56 (formule) si la valeur du message varie
 		mpz_set_str(donnee,"0",16);
-		sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
+		//sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 8 ));
+		strcat(chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee),8));
 	}
 	//
 	mpz_set_ui(donnee,valeur_message_bit);  // review pading 64
-	sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 64 ));
-
+	//sprintf(chaineAtraiter,"%s%s",chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee) , 64 ));
+	strcat(chaineAtraiter,paddingChaine( mpz_get_str(chaine,2,donnee),64));
 
 	//printf("%s ici\n",chaineAtraiter);
 	for (int i = 0 ; i < 64; i++) 
