@@ -269,6 +269,7 @@
           <object class="GtkBox" id="Conteneurtest">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">146</property>
             <child>
               <object class="GtkComboBoxText" id="comboBox1">
                 <property name="width_request">163</property>
@@ -413,6 +414,7 @@
                     <property name="height_request">45</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_left">239</property>
                     <items>
                       <item translatable="yes"> </item>
                       <item translatable="yes">MD5</item>
@@ -425,23 +427,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Lancer</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <signal name="clicked" handler="on_click_hash" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
               </object>
@@ -449,6 +435,22 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Lancer</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <signal name="clicked" handler="on_click_hash" object="Textbox" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
@@ -740,9 +742,64 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkComboBoxText" id="comboBox2">
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <items>
+                      <item id="2" translatable="yes"> </item>
+                      <item translatable="yes">AES 128</item>
+                      <item translatable="yes">AES 192</item>
+                      <item translatable="yes">AES 256</item>
+                      <item translatable="yes">AES 128 CBC</item>
+                      <item translatable="yes">AES 192 CBC</item>
+                      <item translatable="yes">AES 256 CBC</item>
+                    </items>
+                    <signal name="changed" handler="Changed_AES" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">Chiffrement/déchiffrement 
-      fichier</property>
+                    <property name="label" translatable="yes">Hash Fichier</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Chiffrement fichier</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Déchiffrement fichier</property>
                     <property name="width_request">200</property>
                     <property name="height_request">39</property>
                     <property name="visible">True</property>
@@ -767,33 +824,12 @@
                     <signal name="file-set" handler="import_path" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
+                    <property name="left_attach">2</property>
                     <property name="top_attach">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText" id="comboBox2">
-                    <property name="width_request">200</property>
-                    <property name="height_request">39</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <items>
-                      <item id="2" translatable="yes"> </item>
-                      <item translatable="yes">AES 128</item>
-                      <item translatable="yes">AES 192</item>
-                      <item translatable="yes">AES 256</item>
-                      <item translatable="yes">AES 128 CBC</item>
-                      <item translatable="yes">AES 192 CBC</item>
-                      <item translatable="yes">AES 256 CBC</item>
-                    </items>
-                    <signal name="changed" handler="Changed_AES" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">0</property>
-                  </packing>
+                  <placeholder/>
                 </child>
               </object>
               <packing>

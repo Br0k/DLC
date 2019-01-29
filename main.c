@@ -128,12 +128,7 @@ int main(int argc, char *argv []){
   maFile = initialiser();
   maFile = Lecture();
   afficherFile(maFile,label); 
-  g_signal_connect (G_OBJECT(window), "destroy",G_CALLBACK(destroy), NULL);
-
-
-
-
-  
+  g_signal_connect (G_OBJECT(window), "destroy",G_CALLBACK(destroy), NULL);  
 
   gtk_widget_show(window);                
   gtk_main();
