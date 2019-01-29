@@ -5,12 +5,59 @@
 #define FALSE 0
 
 #include <stdio.h>
+#include<string.h>
 #include "gmp.h"
 #include <time.h>
 #include <stdlib.h>
+#include <memory.h>
 
-void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e)
-{
+void formatRsaPublicKey(mpz_t n, mpz_t e) {
+
+	char* header = "3082010A0282010100";
+	char* footer = "0203";
+	char *strNdec = mpz_get_str(NULL, 10, n);
+	char* strN = mpz_get_str(NULL, 16, n);
+	char *strE = mpz_get_str(NULL, 16, e);
+
+	printf("%ld \n", strlen(strNdec));
+	printf("%ld \n", strlen(strN));
+	
+
+	printf("%s \n", strNdec);
+	printf("%s \n", strN);
+	printf("\n");
+
+	//printf("%s", strN);
+
+	//char *rsaPubKey = malloc(sizeof(char) * 19);
+	//rsaPubKey = "aaaaa";
+	//strcat(rsaPubKey, "3082010A0282010100");
+	//Cat n
+
+
+
+	//strcat(rsaPubKey, "0203");
+
+//Cat e
+	//strcat(rsaPubKey, mpz_get_str(rsaPubKey, 10, e));
+
+	//Malloc
+	//
+	//strcat(rsaPubKey, mpz_get_str(rsaPubKey, 10, n));
+
+//Encode b64
+
+	//printf("-----BEGIN RSA PUBLIC KEY-----\n");
+	//printf("%s", header);
+	//printf("%s \n", strN);
+	//printf("%s", footer);
+	//printf("%s \n", strE);
+	//printf("-----END RSA PUBLIC KEY-----\n");
+
+	//free(rsaPubKey);
+}
+
+void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e) {
 
 	int booleen = FALSE;
 	gmp_randstate_t state;
@@ -56,8 +103,7 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 		}
 	}
 
-	while (primeQ == FALSE)
-	{
+	while (primeQ == FALSE) {
 		mpz_urandomb(q, state, mpz_get_ui(kSurDEux) - 1);
 		mpz_add(q, q, powMin);
 		if (mpz_mod_ui(rop, q, 2) != 0) {
@@ -79,8 +125,11 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_invert(dq, e, qMoinsUn);
 	mpz_invert(ip, p, q);
 
+	formatRsaPublicKey(n, e);
+	
 	
 }
+
 
 void RSA_Encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
 	mpz_set_ui(m, 123456);
@@ -176,7 +225,7 @@ int main(int argc, char *argv[]) {
 	mpz_init(m);
 	mpz_init(sign);
 	//A supprimer	
-	mpz_set_ui(k,2048);
+	mpz_set_ui(k, 256);
 	mpz_set_ui(e, 11);
 
 	RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e);
