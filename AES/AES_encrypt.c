@@ -282,7 +282,7 @@ void print_hex(unsigned char * msg) {
 }
 
 
-uint8_t**  Main_AES(char* AES,unsigned char **message,unsigned char * key,int len,unsigned char *IV)
+uint8_t**  Main_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t *IV)
 {
 	int Nk=0,Nb=4,Nr=0,lenExpendKey=0;
 	//int lenAES=16;

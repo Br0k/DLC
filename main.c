@@ -1,16 +1,24 @@
-#include "sha2/sha2.c"
-#include "sha2/fonctionSha2.c"
-#include "sha2/traitementSha2.c"
-#include "historique/main_historique.c"
-#include <gmp.h>
+//fonction SHA2
+#include "hash/sha2.c"
+#include "hash/fonctionSha2.c"
+#include "hash/traitementSha2.c"
+#include "hash/hashlib.c"
 
-#include <gtk/gtk.h>
+//historique
+#include "historique/main_historique.c"
+
+//fonction AES
 #include "AES/AES_encrypt.c"
 #include "AES/AES_decrypt.c"
-#include "hashlib.c"
+
+//includes de base
+
+#include <gmp.h>
+#include <gtk/gtk.h>
 
 
-gchar * distro ;
+
+gchar * distro;
 gchar * algo;
 gchar * AES;
 gchar * Combobox1;
@@ -137,7 +145,8 @@ int main(int argc, char *argv []){
 
   return 0;}
 
-void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label){
+/* Combo box convertisseur Hexa Decimal droite */
+void ComboBoxConvertisseurDroite(GtkComboBox *widget, GtkTextView *text_label){
   GtkComboBox *combo_box = widget;
   GtkTextBuffer *buffer;
   GtkTextIter iter;
@@ -155,7 +164,9 @@ void Changed_combo2(GtkComboBox *widget, GtkTextView *text_label){
   }
 }
 
-void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label){
+
+/*Combo box convertisseur Hexa Decimal gauche */
+void ComboBoxConvertisseurGauche(GtkComboBox *widget, GtkTextView *text_label){
   GtkComboBox *combo_box = widget;
   GtkTextBuffer *buffer;
   GtkTextIter iter;
@@ -166,10 +177,10 @@ void ChangeCombo1(GtkComboBox *widget, GtkTextView *text_label){
   index = gtk_combo_box_get_active (GTK_COMBO_BOX(combo_box));
 
   if (index != -1) {
-    distro= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+    distro = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
     int i = gtk_combo_box_get_active(combo_box);
     Combobox1 = distro;
-   g_print ("You chose %s ; %d\n", distro, i);
+    g_print ("You chose %s ; %d\n", distro, i);
 
   } 
 }
@@ -312,7 +323,7 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
     gtk_widget_hide((GtkWidget*)dialog_AES_CBC);}
 
 
-char ** InitTableau(char ** tab,int size)
+uint8_t ** InitTableau(uint8_t ** tab,int size)
 {
   tab = malloc (sizeof(uint8_t*) * size);
   for (int i = 0; i < size; i++)
@@ -324,7 +335,7 @@ char ** InitTableau(char ** tab,int size)
 
 unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,int * lenPaddedMsg){
   int len, lenPaddedMessage;
-  unsigned char **buf;
+  uint8_t **buf;
   
   printf("%s\n",filename );
   FILE* file;
@@ -438,8 +449,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
       if(filename!=NULL && (strlen(message)==0))
       {
         int lenPaddedMessage;
-        unsigned char ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage);
-        printf("%d\n",lenPaddedMessage );
+        uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage);
         if(key==NULL)
         {
           GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
@@ -448,9 +458,8 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
         }        
           uint8_t **enc_msg;
 
-          GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
+          GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
           gtk_dialog_run(GTK_DIALOG(AESDialog)); 
-        }
 
         if(key!=NULL)
         {
@@ -464,7 +473,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
           printErreur("La longueur du bloc doit etre de 16 !");
         else{
           //Fonction AES
-          unsigned char **MsgToAES; 
+          uint8_t **MsgToAES; 
           char * cs;
           MsgToAES=malloc(sizeof(uint8_t*)*1);
           MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
@@ -647,70 +656,104 @@ void Changed_AES(GtkComboBox *comboBox){
 
     printf("%s et len %d\n",TypeAES,lenAES );
    
-  }}  
+  }
+}  
 
 
+char* get_text_of_textview(GtkWidget *text_view) {
+    GtkTextIter start, end;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer((GtkTextView *)text_view);
+    gchar *text;
+    gtk_text_buffer_get_bounds(buffer, &start, &end);
+    text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+    return text;
+}
 
-void on_click_convert(GtkButton *button,GtkTextView *text_label){
+
+void convertisseur_hexa_dec(char * Label_RadioButton,GtkTextView *text_label){
   GtkTextBuffer *buffer;
   GtkTextIter start,end;
   char* msg,*hist;
   char msgconvert[100]={""};
+  int BoolSaveHistorique=0;
  
-  char *token;
+  char *token,*op1_historique,*op2_historique;
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
-  msg=gtk_text_buffer_get_text(buffer,&start,&end,-1);
-  hist=malloc(sizeof(char*)*sizeof(msg));
-  strcpy(hist,msg);
-  printf("%s\n",msg );
-
-  
-  if(strcmp(Combobox1,Combobox2)!=0 && (strcmp(Combobox1,"DEC")==0 || strcmp(Combobox1,"HEX")==0))
+  if(gtk_text_buffer_get_char_count(buffer)!=0)
   {
-    //Pour convertir decimal to hexa
-    if (strcmp(Combobox1,"DEC")==0)
-    {
+    msg=gtk_text_buffer_get_text(buffer,&start,&end,-1);
+    hist=malloc(sizeof(char*)*sizeof(msg));
+    strcpy(hist,msg);
+
+
+      if (strcmp(Label_RadioButton,"Héxadécimal")==0)
+      {
+        token=strtok(msg," ");
+        if(atoi(token)!=0)
+        {
+          while( token != NULL )
+          {
+            char tmp[10];
+            printf("%d\n",atoi(token) );
+            
+            sprintf(tmp,"%02X",atoi(token));
+            strcat(tmp," ");
+            strcat(msgconvert,tmp);        
+            token = strtok(NULL," ");
+          }
+          op1_historique="DEC";
+          op2_historique="HEX";
+        } 
+        else{
+          strcat(msgconvert,hist);
+          BoolSaveHistorique=1;
+        }
+        //sprintf(msgconvert,"%02X",atoi(msg));
+        gtk_text_buffer_delete(buffer,&start,&end);
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+        gtk_text_buffer_insert(buffer,&end,msgconvert,-1);
+      }else{
+        op1_historique="HEX";
+        op2_historique="DEC";
+        token=strtok(msg," ");
+        while( token != NULL )
+        {
+          char tmp[10];
+          int decimal=hexadecimalToDecimal(token);
+          sprintf(tmp,"%d",decimal);
+          strcat(tmp," ");
+          strcat(msgconvert,tmp);
+          token = strtok(NULL," ");
+         
+        } 
+        gtk_text_buffer_delete(buffer,&start,&end);
+        buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+        gtk_text_buffer_insert(buffer,&end,msgconvert,-1);
+        
+      }
+
+    if(BoolSaveHistorique!=1)
+      Historique(hist,msgconvert,op1_historique,op2_historique);
+
+  }}
+
+
+void Convertisseur(GtkToggleButton *button,GtkTextView *text_label){
+  GSList * group = gtk_radio_button_get_group (GTK_RADIO_BUTTON(button));
+  for (; group != NULL; group = group->next) {
+    GtkRadioButton *radio = group->data;
      
-      token=strtok(msg," ");
-      while( token != NULL )
-      {
-        char tmp[10];
-        sprintf(tmp,"%02X",atoi(token));
-        strcat(tmp," ");
-        strcat(msgconvert,tmp);
-        printf("%s\n",msgconvert );
-        token = strtok(NULL," ");
-
-      }
-      //sprintf(msgconvert,"%02X",atoi(msg));
-      gtk_text_buffer_delete(buffer,&start,&end);
-      buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-      gtk_text_buffer_insert(buffer,&end,msgconvert,-1);
-    }else{
-
-      token=strtok(msg," ");
-      
-      while( token != NULL )
-      {
-        char tmp[10];
-        int decimal=hexadecimalToDecimal(token);
-        sprintf(tmp,"%d",decimal);
-        strcat(tmp," ");
-        strcat(msgconvert,tmp);
-        token = strtok(NULL," ");
-       
-      }
-      
-
-      gtk_text_buffer_delete(buffer,&start,&end);
-      buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-      gtk_text_buffer_insert(buffer,&end,msgconvert,-1);
-      
+    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio))) {
+      printf("%s\n",gtk_button_get_label(GTK_BUTTON(radio)) );
+      convertisseur_hexa_dec(gtk_button_get_label (GTK_BUTTON (radio)),text_label);      
+      break;
     }
   }
-  Historique(hist,msgconvert,Combobox1,Combobox2);}
+}
+
+
 
 void generateAESKey(GtkButton *button,GtkTextView *text_label){
   if(TypeAES==NULL)
