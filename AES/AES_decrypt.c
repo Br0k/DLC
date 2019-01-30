@@ -277,13 +277,14 @@ void invSubBytes(unsigned char* travail) {
 	}
 }
 
+//unsigned char* AES_decrypt(unsigned char* key, unsigned char* cipher, int lenKey, int lenCipher) {
+unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, int expandedLenght){
 
-unsigned char* AES_decrypt(unsigned char* key, unsigned char* cipher, int lenKey, int lenCipher) {
+    //int Nr; //10, 12 ou 14 tours
+    //int Nk; // 4, 6 ou 8 colonnes en fonction de la taille de la clé
+    //int expandedLenght;
 
-    int Nr; //10, 12 ou 14 tours
-    int Nk; // 4, 6 ou 8 colonnes en fonction de la taille de la clé
-    int expandedLenght;
-
+    /*
     switch(lenKey){
         case 16:
             Nr = 10;
@@ -305,9 +306,10 @@ unsigned char* AES_decrypt(unsigned char* key, unsigned char* cipher, int lenKey
             exit(0);
             break;
     }
+    */
 
-    unsigned char keys[expandedLenght];
-    InvKeyExpansion(key, keys, Nk, Nr);
+    //unsigned char keys[expandedLenght];
+    //InvKeyExpansion(key, keys, Nk, Nr);
 
 
     unsigned char travail[16];
@@ -400,6 +402,101 @@ unsigned char* AES_decrypt(unsigned char* key, unsigned char* cipher, int lenKey
     memcpy(plaintext,travail,16);
 
     return plaintext;
+}
+
+uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t *IV)
+{
+  int Nk=0,Nr=0,lenExpendKey=0; //Nb=4
+  //int lenAES=16;
+  //int lenPaddedMessage = len;
+  //char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
+  //char key[24]={142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
+  //char IV[16]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+  if(strcmp(AES,"AES 128")==0 || strcmp(AES,"AES 128 CBC")==0)
+  {
+    Nk=4;
+    Nr=10;
+    //lenAES=16;
+    lenExpendKey=176;
+  }else if (strcmp(AES,"AES 192")==0 || strcmp(AES,"AES 192 CBC")==0)
+  {
+    Nk=6;
+    Nr=12;
+    //lenAES=24;
+    lenExpendKey=208;
+  }else
+  {
+    Nk=8;
+    Nr=14;
+    //lenAES=32;
+    lenExpendKey=240;
+  }
+
+  uint8_t **plaintext;
+  plaintext=malloc(sizeof(uint8_t *)*len);
+
+  for (int i = 0; i < len; i++)
+  {
+    plaintext[i]=malloc(sizeof(uint8_t*)*16);
+  }
+  printf("len = %d\n",len );
+
+  for (int i = 0; i < len; i++)
+  {
+    for (int y = 0; y < 16; y++)
+        {
+          printf("%02X",(unsigned char) (message[i][y]) );
+        }
+        printf("\n");
+  }
+  unsigned char expandedKeys[lenExpendKey];
+  //KeyExpansion(key,expandedKeys, Nk, Nb, Nr);
+
+  InvKeyExpansion(key, expandedKeys, Nk, Nr);
+
+  printf("KEY expanded\n");
+  int saut = 0;
+  for (int i = 0; i < lenExpendKey; i++)
+  {
+    printf("%02X ",(unsigned char) *(expandedKeys+i));
+    saut++;
+    if (saut >= 16)
+    {
+      printf("\n");
+      saut = 0;
+    } 
+  }
+    
+  //paddedMessage = IV ^ paddedMessage
+  if(IV != NULL)
+  {
+    for (int i = 0; i <16; i++)
+    {
+      message[0][i] ^= IV[i];
+    }
+  }
+  printf("\nEncrypt message\n");
+  int pos=0;
+  for (int i = 0; i < len; i++)
+  {   
+    printf("To AES\n");
+    print_hex(message[i]);
+    //plaintext[pos] = AES_encrypt(message[i],expandedKeys,Nr,lenExpendKey);
+    plaintext[pos] = AES_decrypt(message[i],expandedKeys,Nr,lenExpendKey);
+    //paddedMessage+i = paddedMessage+i ^ plaintext
+    if(i+1<len && IV!=NULL){
+      for (int j = 0; j < 16; j++) 
+      {
+        message[i+1][j]=plaintext[pos][j]^message[i+1][j];
+      }
+    }
+    pos++;
+
+  }
+
+
+  
+  return plaintext;
 }
 
 /*

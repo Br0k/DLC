@@ -80,8 +80,6 @@ unsigned char rcon[256] = {
   0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d
 };
 
-
-
 void SuBytes(unsigned char* state){
 	//int t;
 	for (int i = 0; i < 16; i++)
@@ -89,8 +87,8 @@ void SuBytes(unsigned char* state){
 		//printf("%02X ", (unsigned char) state[i]);
 		state[i]= s[state[i]];
 	}
-
 }
+
 void ShiftRows(unsigned char* state){
 	unsigned char tmp[16];
 	tmp[0] = state[0];
@@ -121,6 +119,7 @@ void ShiftRows(unsigned char* state){
 		state[i]=tmp[i];
 	}
 }
+
 void MixColums(unsigned char* state){
 
 	unsigned char tmp[16];
@@ -152,15 +151,16 @@ void MixColums(unsigned char* state){
 	for (int i=0;i<16;i++)
 	{
 		state[i]=tmp[i];
-	}
-	
+	}	
 }
+
 void AddexpandedKeys(int round ,unsigned char* state, unsigned char* expandedKeys){
 	for (int i = 0; i <16; i++)
 	{
 		state[i] ^= expandedKeys[i];
 	}
 }
+
 uint8_t * AES_encrypt(unsigned char* message,unsigned char* expandedKeys,int Nr,int lenExpendKey)
 {
 	unsigned char state[16];
@@ -282,7 +282,7 @@ void print_hex(unsigned char * msg) {
 }
 
 
-uint8_t**  Main_AES(char* AES,unsigned char **message,unsigned char * key,int len,unsigned char *IV)
+uint8_t**  Main_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t *IV)
 {
 	int Nk=0,Nb=4,Nr=0,lenExpendKey=0;
 	//int lenAES=16;

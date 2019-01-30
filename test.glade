@@ -222,9 +222,22 @@
     <property name="can_focus">False</property>
     <property name="can_default">True</property>
     <property name="has_default">True</property>
+    <property name="title" translatable="yes">Calculette Cryptographique</property>
+    <property name="resizable">False</property>
     <property name="gravity">north</property>
     <child type="titlebar">
-      <placeholder/>
+      <object class="GtkEntry">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="visibility">False</property>
+        <property name="invisible_char">*</property>
+        <property name="input_purpose">pin</property>
+        <child internal-child="accessible">
+          <object class="AtkObject">
+            <property name="AtkObject::accessible-role" translatable="yes">password-text</property>
+          </object>
+        </child>
+      </object>
     </child>
     <child>
       <object class="GtkBox" id="ConteneurGeneral">
@@ -266,24 +279,21 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="Conteneurtest">
+          <object class="GtkBox" id="Convertisseur">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_left">146</property>
             <child>
-              <object class="GtkComboBoxText" id="comboBox1">
-                <property name="width_request">163</property>
-                <property name="height_request">16</property>
+              <object class="GtkRadioButton" id="radiobutton1">
+                <property name="label" translatable="yes">Décimal</property>
+                <property name="height_request">35</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <items>
-                  <item id="2" translatable="yes"> </item>
-                  <item translatable="yes">DEC</item>
-                  <item translatable="yes">HEX</item>
-                </items>
-                <signal name="changed" handler="ChangeCombo1" object="Textbox" swapped="no"/>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="margin_left">208</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+                <property name="group">Hexa</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -292,40 +302,20 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxText">
-                <property name="width_request">180</property>
-                <property name="height_request">16</property>
+              <object class="GtkRadioButton" id="Hexa">
+                <property name="label" translatable="yes">Héxadécimal</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <items>
-                  <item translatable="yes"> </item>
-                  <item translatable="yes">HEX</item>
-                  <item translatable="yes">DEC</item>
-                </items>
-                <signal name="changed" handler="Changed_combo2" object="Textbox" swapped="no"/>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+                <property name="group">radiobutton1</property>
+                <signal name="toggled" handler="Convertisseur" object="Textbox" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="convert">
-                <property name="label" translatable="yes">Convertir</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <signal name="clicked" handler="on_click_convert" object="Textbox" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -408,28 +398,6 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkComboBoxText">
-                    <property name="width_request">180</property>
-                    <property name="height_request">45</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_left">239</property>
-                    <items>
-                      <item translatable="yes"> </item>
-                      <item translatable="yes">MD5</item>
-                      <item translatable="yes">SHA1</item>
-                      <item translatable="yes">SHA2</item>
-                      <item translatable="yes">HMAC-SHA1</item>
-                    </items>
-                    <signal name="changed" handler="hashList" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -438,14 +406,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Lancer</property>
+              <object class="GtkFileChooserButton" id="FileDialog">
+                <property name="width_request">200</property>
+                <property name="height_request">-1</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <signal name="clicked" handler="on_click_hash" object="Textbox" swapped="no"/>
+                <property name="margin_left">416</property>
+                <property name="title" translatable="yes"/>
+                <signal name="file-set" handler="import_path" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -475,147 +444,8 @@
                 <property name="column_homogeneous">True</property>
                 <child>
                   <object class="GtkButton">
-                    <property name="label" translatable="yes">7</property>
-                    <property name="width_request">49</property>
-                    <property name="height_request">-1</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="margin_right">2</property>
-                    <property name="margin_top">3</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">8</property>
-                    <property name="width_request">49</property>
-                    <property name="height_request">-1</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="margin_top">3</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">9</property>
-                    <property name="width_request">49</property>
-                    <property name="height_request">-1</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="margin_top">3</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">2</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">4</property>
-                    <property name="width_request">49</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="margin_top">2</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">5</property>
-                    <property name="width_request">49</property>
-                    <property name="height_request">-1</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="margin_top">2</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">6</property>
-                    <property name="width_request">49</property>
-                    <property name="height_request">-1</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="margin_top">3</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">2</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">1</property>
-                    <property name="width_request">49</property>
-                    <property name="height_request">-1</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="margin_top">1</property>
-                    <property name="margin_bottom">2</property>
-                    <property name="image_position">right</property>
-                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
                     <property name="label" translatable="yes">2</property>
-                    <property name="width_request">49</property>
+                    <property name="width_request">59</property>
                     <property name="height_request">-1</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -628,14 +458,14 @@
                     <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">2</property>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">3</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton">
                     <property name="label" translatable="yes">3</property>
-                    <property name="width_request">49</property>
+                    <property name="width_request">59</property>
                     <property name="height_request">-1</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -648,21 +478,278 @@
                     <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="left_attach">2</property>
+                    <property name="left_attach">3</property>
+                    <property name="top_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">4</property>
+                    <property name="width_request">59</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">2</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
                     <property name="top_attach">2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="btn_0">
-                    <property name="label" translatable="yes">0</property>
-                    <property name="width_request">49</property>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">5</property>
+                    <property name="width_request">59</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">2</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">6</property>
+                    <property name="width_request">59</property>
                     <property name="height_request">-1</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="margin_top">3</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">7</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">8</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">9</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">A</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">B</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">C</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">D</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">E</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">F</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">0</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">1</property>
+                    <property name="margin_bottom">2</property>
+                    <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">1</property>
+                    <property name="width_request">59</property>
+                    <property name="height_request">-1</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_top">1</property>
+                    <property name="margin_bottom">2</property>
                     <property name="image_position">right</property>
                     <signal name="clicked" handler="on_btn_0_clicked" object="Textbox" swapped="no"/>
                   </object>
@@ -670,12 +757,6 @@
                     <property name="left_attach">1</property>
                     <property name="top_attach">3</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -688,6 +769,7 @@
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_left">12</property>
                 <property name="row_homogeneous">True</property>
                 <property name="column_homogeneous">True</property>
                 <child>
@@ -717,7 +799,6 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <signal name="clicked" handler="DECRYPT_AES" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -742,6 +823,42 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Chiffrement fichier</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_left">3</property>
+                    <property name="relief">half</property>
+                    <signal name="clicked" handler="Chiffrement_Fichier" object="FileDialog" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Déchiffrement fichier</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_left">3</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkComboBoxText" id="comboBox2">
                     <property name="width_request">200</property>
                     <property name="height_request">39</property>
@@ -749,8 +866,8 @@
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="margin_left">3</property>
                     <items>
-                      <item id="2" translatable="yes"> </item>
                       <item translatable="yes">AES 128</item>
                       <item translatable="yes">AES 192</item>
                       <item translatable="yes">AES 256</item>
@@ -775,61 +892,54 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="margin_left">6</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="yes">Hash String</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_left">6</property>
+                    <signal name="clicked" handler="on_click_hash" object="Textbox" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="comboBox1">
+                    <property name="name">HASH</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">39</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="margin_left">6</property>
+                    <items>
+                      <item translatable="yes">MD5</item>
+                      <item translatable="yes">SHA1</item>
+                      <item translatable="yes">SHA2</item>
+                      <item translatable="yes">SHA3</item>
+                      <item translatable="yes">HMAC-SHA1</item>
+                    </items>
+                    <signal name="changed" handler="hashList" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
                     <property name="top_attach">0</property>
                   </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Chiffrement fichier</property>
-                    <property name="width_request">200</property>
-                    <property name="height_request">39</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">Déchiffrement fichier</property>
-                    <property name="width_request">200</property>
-                    <property name="height_request">39</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkFileChooserButton">
-                    <property name="width_request">200</property>
-                    <property name="height_request">39</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">True</property>
-                    <property name="title" translatable="yes"/>
-                    <signal name="file-set" handler="import_path" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">2</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
