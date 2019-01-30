@@ -24,7 +24,7 @@ gchar * Combobox2;
 gchar * algo_value;
 gchar * TypeAES;
 gchar *hmacKey;
-char* filename;
+char* file_path;
 int lenAES;
 
 unsigned char* key;
@@ -59,10 +59,10 @@ void Historique(char* op1,char* op2,char* type,char* type2){
   printf("%d\n", taille);
   char tmp[1024];
   if(type2!=NULL){
-    sprintf(tmp,"\t%s(%s)  =  %s(%s)\n",op1,type,op2,type2);
+    sprintf(tmp,"\t%s(%s)  =  %s(%s)\n",type,op1,type2,op2);
   }
   else{
-    sprintf(tmp,"\t%s(%s)  =  %s\n",op1,type,op2);
+    sprintf(tmp,"\t%s(%s)  =  %s\n",type,op1,op2);
   }
   if(taille>=7){
     defiler(maFile);
@@ -330,7 +330,7 @@ uint8_t ** InitTableau(int size)
   return tab;
 }  
 
-unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,int * lenPaddedMsg){
+unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,int * lenPaddedMsg,char * filename){
   int len, lenPaddedMessage;
   uint8_t **buf;
   
@@ -419,8 +419,7 @@ char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,Gt
 }
 
 void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
-
-  filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
+  char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
   printf("%s et type %s\n",filename ,TypeAES);
 
   if(TypeAES==NULL)
@@ -430,7 +429,7 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       printErreur("Selectionner un fichier !");
     else{
       int lenPaddedMessage;
-      uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage);
+      uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename);
       if(key==NULL)
       {
         GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
@@ -442,7 +441,7 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
         enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
 
         //char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL);
-        TraitementFile("w",enc_msg,lenPaddedMessage,NULL);
+        TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
       }
     }
   }
@@ -473,7 +472,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
   if(TypeAES==NULL)
     printErreur("Vous devez choisir votre AES !");
   else{
-    if(filename==NULL && (strlen(message)==0))
+    if(strlen(message)==0)
       printErreur("Aucun données a chiffrer !");
     else{
        if ((strlen(message)!=47))
@@ -548,10 +547,11 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
   if(TypeAES==NULL)
     printErreur("Vous devez choisir votre AES !");
   else{
-    if(filename==NULL && (strlen(message)==0))
-      printErreur("Aucun données a chiffrer !");
-    else{
-       if ((strlen(message)!=47))
+  if(file_path==NULL && (strlen(message)==0))
+      printErreur("Aucun données a chiffrer !");           
+  else{
+      if ((strlen(message)!=47))
+
         printErreur("La longueur du bloc doit etre de 16 !");
       else{
         //Fonction AES
@@ -600,8 +600,8 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
     free(IV);
     free(key);
   } 
-}
 
+}
 
 
 void Changed_AES(GtkComboBox *comboBox){
@@ -764,11 +764,12 @@ void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label){
    
   GtkTextBuffer *buffer;
   GtkTextIter iter;
-  int i;
+  
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   
   gtk_text_buffer_get_end_iter(buffer,&iter);
-  sscanf(gtk_button_get_label(button),"%d",&i);
+  //sscanf(,"%s",&i);
+  int i= hexadecimalToDecimal(gtk_button_get_label(button));
   switch(i)
   {
     case 0:
@@ -822,6 +823,37 @@ void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label){
       gtk_text_buffer_insert(buffer,&iter,"9",-1);
       break;
     }
+    case 10:
+    {
+      gtk_text_buffer_insert(buffer,&iter,"A",-1);
+      break;
+    }
+    case 11:
+    {
+      gtk_text_buffer_insert(buffer,&iter,"B",-1);
+      break;
+    }
+    case 12:
+    {
+      gtk_text_buffer_insert(buffer,&iter,"C",-1);
+      break;
+    }
+    case 13:
+    {
+      gtk_text_buffer_insert(buffer,&iter,"D",-1);
+      break;
+    }
+    case 14:
+    {
+      gtk_text_buffer_insert(buffer,&iter,"E",-1);
+      break;
+    }
+    case 15:
+    {
+      gtk_text_buffer_insert(buffer,&iter,"F",-1);
+      break;
+    }
+
   }}      
         
 void on_click_hash(GtkButton *button, GtkTextView *text_label){
@@ -884,7 +916,9 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
 }
 
 char* readFile(char* filename){
-  FILE* file = fopen(filename, "rb");
+
+  FILE *file = fopen(filename, "rb");
+
   long len;
     char * buf = 0;
 
@@ -911,7 +945,7 @@ void on_hash_file(GtkButton *button, GtkTextView *text_label){
 
   GtkTextBuffer * buffer;
   GtkTextIter start,end; 
-  char *input =readFile(filename);
+  char *input =readFile(file_path);
   char *md5 = md5digest(input);
 
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
