@@ -16,8 +16,6 @@
 #include <gmp.h>
 #include <gtk/gtk.h>
 
-
-
 gchar * distro;
 gchar * algo;
 gchar * AES;
@@ -259,7 +257,7 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
   entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
   if(strlen(entry_text)!=(lenAES*2)+lenAES-1)
   {
-    printErreur("Taille de clé incorrect !");
+    printErreur("Taille de clé incorrecte !");
   }
   else{
     key = malloc(lenAES);
@@ -274,7 +272,7 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
       
     }
     gtk_entry_set_text(GTK_ENTRY (entry),"");
-    gtk_entry_set_text(GTK_ENTRY (entry),"Entrer votre clés AES ...");
+    gtk_entry_set_text(GTK_ENTRY (entry),"Entrer votre clé AES ...");
     gtk_widget_hide((GtkWidget*)dialog_AES);
   }
 }  
@@ -287,7 +285,7 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
   printf("entry len: %zu et len: %d\n",strlen((char*)entry_text_key),(lenAES*2)+lenAES-1);
   if(strlen((char*)entry_text_key)!=(lenAES*2)+lenAES-1)
   {
-    printErreur("Taille de clé incorrect !");
+    printErreur("Taille de clé incorrecte !");
   }
   else{
     key = malloc(lenAES);
@@ -317,15 +315,15 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
     }
 
     gtk_entry_set_text(Key_Entry,"");
-    gtk_entry_set_text(Key_Entry,"Entrer votre clés AES ...");
+    gtk_entry_set_text(Key_Entry,"Entrer votre clé AES ...");
     gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"");
     gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"Entrer votre IV...");
     gtk_widget_hide((GtkWidget*)dialog_AES_CBC);}
 
 
-uint8_t ** InitTableau(uint8_t ** tab,int size)
+uint8_t ** InitTableau(int size)
 {
-  tab = malloc (sizeof(uint8_t*) * size);
+  uint8_t **tab = malloc (sizeof(uint8_t*) * size);
   for (int i = 0; i < size; i++)
   {
     tab[i]=malloc(sizeof(uint8_t*)*16);
@@ -351,7 +349,7 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
 
       *lenPaddedMsg=lenPaddedMessage;
       fseek (file, 0, SEEK_SET);
-      buf = InitTableau(buf,lenPaddedMessage);
+      buf = InitTableau(lenPaddedMessage);
       int lenPadde = len/16+1;
       for (int i = 0; i <= lenPadde; i++)
       {
@@ -403,7 +401,7 @@ char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,Gt
   int decimal;
   char * result_history;
   result_history=(char *)calloc(size,sizeof(char*));
-  char tmp[16],msgEncrypt[16];
+  char tmp[16];
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_end_iter(buffer,&end);
 
@@ -436,8 +434,7 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       if(key==NULL)
       {
         GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
-
-        gtk_dialog_run(AESDialog); 
+        gtk_dialog_run(GTK_DIALOG(AESDialog)); 
       }        
         uint8_t **enc_msg;
       if(key!=NULL)
@@ -509,8 +506,8 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
         if (key != NULL)
         {
           uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,1,IV);
-          char tmp[16];
-          int decimal;
+          //char tmp[16];
+          //int decimal;
           //Pour supprimer
           buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
           gtk_text_buffer_get_end_iter(buffer,&end);
@@ -680,7 +677,7 @@ void Changed_AES(GtkComboBox *comboBox){
 }*/
 
 
-void convertisseur_hexa_dec(char * Label_RadioButton,GtkTextView *text_label){
+void convertisseur_hexa_dec(const gchar * Label_RadioButton,GtkTextView *text_label){
   GtkTextBuffer *buffer;
   GtkTextIter start,end;
   int bool_conve=0;
@@ -787,8 +784,8 @@ void generateAESKey(GtkButton *button,GtkTextView *text_label){
     
     key = (unsigned char *) malloc(lenAES);
     printf("%d\n",lenAES );
-    char AESKey[lenAES];
-    char tmp[lenAES];
+    //char AESKey[lenAES];
+    //char tmp[lenAES];
     mpz_t number_generate;
     gmp_randstate_t prng;
     gmp_randinit_default(prng);
@@ -961,7 +958,9 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
 }
 
 char* readFile(char* filename){
+
   FILE *file = fopen(filename, "rb");
+
   long len;
     char * buf = 0;
 
@@ -981,6 +980,7 @@ char* readFile(char* filename){
   if (buf){
     return buf;
   }
+  return NULL;
 }
 
 void on_hash_file(GtkButton *button, GtkTextView *text_label){
