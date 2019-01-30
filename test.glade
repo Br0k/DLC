@@ -59,7 +59,7 @@
           <object class="GtkEntry" id="Key">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre clés AES ...</property>
+            <property name="text" translatable="yes">Entrer votre clé AES ...</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -127,7 +127,7 @@
           <object class="GtkEntry" id="Key1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre clés AES ...</property>
+            <property name="text" translatable="yes">Entrer votre clé AES ...</property>
           </object>
           <packing>
             <property name="expand">False</property>
