@@ -190,7 +190,6 @@ void ComboBoxConvertisseurGauche(GtkComboBox *widget, GtkTextView *text_label){
   gtk_file_chooser_unselect_all(GTK_FILE_CHOOSER(btn));
 }*/
 
-
 void hashList(GtkComboBox *widget){
   GtkComboBox *combo_box = widget;
 
@@ -527,6 +526,82 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 }
 
 
+
+void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
+{
+  GtkTextBuffer *buffer;
+  GtkTextIter start,end;
+  char* message;
+  char * history;
+
+  //ON recupere le message dans la textBox si il est pas trop grand
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+  gtk_text_buffer_get_start_iter(buffer, &start);
+  gtk_text_buffer_get_end_iter(buffer, &end);
+  message=gtk_text_buffer_get_text(buffer,&start,&end,-1);
+  history=malloc(sizeof(char*)*sizeof(message));
+  
+
+  strcpy(history,message);
+
+  if(TypeAES==NULL)
+    printErreur("Vous devez choisir votre AES !");
+  else{
+  if(file_path==NULL && (strlen(message)==0))
+      printErreur("Aucun données a chiffrer !");           
+  else{
+      if ((strlen(message)!=47))
+
+        printErreur("La longueur du bloc doit etre de 16 !");
+      else{
+        //Fonction AES
+        uint8_t **MsgToAES; 
+        char * cs;
+        MsgToAES=malloc(sizeof(uint8_t*)*1);
+        MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
+   
+
+        for (int i = 0; (cs = strtok ((char*)message," ")); i++)
+        {
+          int tmp = hexadecimalToDecimal(cs); 
+          MsgToAES[0][i]=(uint8_t)tmp;
+          message = NULL; 
+        }
+        if(key==NULL)   
+        {
+          GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
+          //GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
+          gtk_dialog_run(GTK_DIALOG(AESDialog)); 
+        }
+        
+        for (int i = 0; i < 16; ++i)
+        {
+          printf("%02X ",(unsigned char) (MsgToAES[0][i]) );
+        }
+        if (key != NULL)
+        {
+          uint8_t ** msg = InvMain_AES(TypeAES,MsgToAES,key,1,IV);
+          //char tmp[16];
+          //int decimal;
+          //Pour supprimer
+          buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+          gtk_text_buffer_get_end_iter(buffer,&end);
+          gtk_text_buffer_delete(buffer,&start,&end);
+          //Pour ajouter
+
+          char *result_history=Afficher_AES_Label(buffer,end,msg,text_label,sizeof(message));
+          Historique(history,result_history,TypeAES,NULL);
+
+        }         
+      }
+    }
+    key=NULL;
+    IV=NULL;
+    free(IV);
+    free(key);
+  } 
+
+}
 
 
 void Changed_AES(GtkComboBox *comboBox){
