@@ -59,7 +59,7 @@
           <object class="GtkEntry" id="Key">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre clé AES ...</property>
+            <property name="text" translatable="yes">Entrer votre clés AES ...</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -127,7 +127,7 @@
           <object class="GtkEntry" id="Key1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre clé AES ...</property>
+            <property name="text" translatable="yes">Entrer votre clés AES ...</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -226,7 +226,18 @@
     <property name="resizable">False</property>
     <property name="gravity">north</property>
     <child type="titlebar">
-      <placeholder/>
+      <object class="GtkEntry">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="visibility">False</property>
+        <property name="invisible_char">*</property>
+        <property name="input_purpose">pin</property>
+        <child internal-child="accessible">
+          <object class="AtkObject">
+            <property name="AtkObject::accessible-role" translatable="yes">password-text</property>
+          </object>
+        </child>
+      </object>
     </child>
     <child>
       <object class="GtkBox" id="ConteneurGeneral">
@@ -788,7 +799,6 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <signal name="clicked" handler="Decrypt_AES" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>

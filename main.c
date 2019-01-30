@@ -333,8 +333,7 @@ uint8_t ** InitTableau(int size)
 unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,int * lenPaddedMsg,char * filename){
   int len, lenPaddedMessage;
   uint8_t **buf;
-  
-  printf("%s\n",filename );
+
   FILE* file;
   if(strcmp(mode,"rb")==0)
   {
@@ -347,13 +346,18 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
         lenPaddedMessage = (len/16 +1); 
 
       *lenPaddedMsg=lenPaddedMessage;
+      printf("%d\n",lenPaddedMessage );
       fseek (file, 0, SEEK_SET);
       buf = InitTableau(lenPaddedMessage);
+      printf("%d\n",len );
       int lenPadde = len/16+1;
-      for (int i = 0; i <= lenPadde; i++)
+      printf("%d\n",lenPaddedMessage );
+      for (int i = 0; i <= lenPaddedMessage-1; i++)
       {
-        fgets((char*)buf[i], 17, file);
+        printf("%d\n",i );
+        fgets((uint8_t*)buf[i], 16, file);
       }
+      printf("apres lecture\n");
       int reste = len%16;
       int last =lenPadde-1;
 
@@ -368,14 +372,19 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
   } 
   if(strcmp(mode,"w")==0)
   {
-    file = fopen("Chiffre.enc", "w");
+    char * path = strtok ((char*)filename,".");
+    strcat(path,".enc");
+    printf("%s\n",path );
+    file = fopen(path, "w");
     if (file != NULL)
     { 
+         
         for (int y = 0; y < lenght; y++)
           for (int i = 0; i < 16; i++)
             fprintf(file,"%02X",(unsigned char) *(chiffre[y]+i) );
-        //buf="";      
 
+        //buf="";      
+        printf("Mais la je plante surement\n");
     }
   }
   fclose (file);
@@ -417,7 +426,8 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       if(key!=NULL)
       {
         enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
-        char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
+        printf("je passe ici\n");
+        char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL,filename);
         //TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
       }
     }
