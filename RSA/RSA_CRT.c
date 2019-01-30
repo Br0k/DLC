@@ -10,51 +10,45 @@
 #include <time.h>
 #include <stdlib.h>
 #include <memory.h>
+#include "base64.h"
 
 void formatRsaPublicKey(mpz_t n, mpz_t e) {
 
-	char* header = "3082010A0282010100";
-	char* footer = "0203";
+	mpz_t hex;
+	mpz_t mpzHeader;
+	mpz_t mpzFooter;
+	mpz_inits(mpzHeader, mpzFooter, hex, NULL);
+
+	mpz_set_str(mpzHeader, "3082010A0282010100", 16);
+	mpz_set_str(mpzFooter, "0203", 16);
+
 	char *strNdec = mpz_get_str(NULL, 10, n);
 	char* strN = mpz_get_str(NULL, 16, n);
 	char *strE = mpz_get_str(NULL, 16, e);
 
-	printf("%ld \n", strlen(strNdec));
-	printf("%ld \n", strlen(strN));
-	
+	int len;
+	len = strlen("3082010A0282010100") + strlen("0203") + strlen(strE) + strlen(strN);
 
-	printf("%s \n", strNdec);
-	printf("%s \n", strN);
-	printf("\n");
+	unsigned char *encoded = malloc(sizeof(char) * len);
+	for (int i = 0; i < len; i++) {
+		encoded[i] = '\0';
+	}
 
-	//printf("%s", strN);
+	strcat(encoded, mpz_get_str(NULL, 16, mpzHeader));
+	strcat(encoded, mpz_get_str(NULL, 16, n));
+	strcat(encoded, mpz_get_str(NULL, 16, mpzFooter));
+	strcat(encoded, mpz_get_str(NULL, 16, e));
 
-	//char *rsaPubKey = malloc(sizeof(char) * 19);
-	//rsaPubKey = "aaaaa";
-	//strcat(rsaPubKey, "3082010A0282010100");
-	//Cat n
+	char *b64encoded = b64_encode(encoded, strlen(encoded));
 
+	printf("-----BASE16-----\n");
+	printf("%s \n", encoded);
+	printf("-----BASE16-----\n");
 
+	printf("-----BEGIN RSA PUBLIC KEY-----\n");
+	printf("%s \n", b64encoded);
+	printf("-----END RSA PUBLIC KEY-----\n");
 
-	//strcat(rsaPubKey, "0203");
-
-//Cat e
-	//strcat(rsaPubKey, mpz_get_str(rsaPubKey, 10, e));
-
-	//Malloc
-	//
-	//strcat(rsaPubKey, mpz_get_str(rsaPubKey, 10, n));
-
-//Encode b64
-
-	//printf("-----BEGIN RSA PUBLIC KEY-----\n");
-	//printf("%s", header);
-	//printf("%s \n", strN);
-	//printf("%s", footer);
-	//printf("%s \n", strE);
-	//printf("-----END RSA PUBLIC KEY-----\n");
-
-	//free(rsaPubKey);
 }
 
 void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e) {
@@ -225,8 +219,8 @@ int main(int argc, char *argv[]) {
 	mpz_init(m);
 	mpz_init(sign);
 	//A supprimer	
-	mpz_set_ui(k, 256);
-	mpz_set_ui(e, 11);
+	mpz_set_ui(k, 2048);
+	mpz_set_ui(e, 65537);
 
 	RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e);
 	//RSA_Encrypt(c, m, e, n);
