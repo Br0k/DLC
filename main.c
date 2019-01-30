@@ -183,12 +183,12 @@ void ComboBoxConvertisseurGauche(GtkComboBox *widget, GtkTextView *text_label){
   } 
 }
 
-/*void import_path(GtkFileChooserButton *btn){
+void import_path(GtkFileChooserButton *btn){
 
-  filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
-  printf("%s\n",filename );
+  file_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
+  printf("%s\n",file_path );
   gtk_file_chooser_unselect_all(GTK_FILE_CHOOSER(btn));
-}*/
+}
 
 void hashList(GtkComboBox *widget){
   GtkComboBox *combo_box = widget;
@@ -200,9 +200,35 @@ void hashList(GtkComboBox *widget){
     algo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
     //int i = gtk_combo_box_get_active(combo_box);
     algo_value = algo;
-   g_print ("You chose %s\n", algo);
+   g_print ("Choix : %s\n", algo);
    
   }  
+}
+
+char* readFile(char* filename){
+
+  FILE* file = fopen(file_path, "rb");
+
+  long len;
+  char * buf = 0;
+
+  if (file)
+  {
+    fseek (file, 0, SEEK_END);
+    len = ftell (file);
+    fseek (file, 0, SEEK_SET);
+    buf = malloc (sizeof(char) * len);
+    if (buf)
+    {
+      fread (buf, 1, len, file);
+    }
+    fclose (file);
+  }
+
+  if (buf){
+    return buf;
+  }
+  return;
 }
 
 void printErreur(char *msg){ 
@@ -925,43 +951,59 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
   Historique(input,hash,algo_value,NULL);
 }
 
-char* readFile(char* filename){
-
-  FILE *file = fopen(filename, "rb");
-
-  long len;
-    char * buf = 0;
-
-  if (file)
-  {
-    fseek (file, 0, SEEK_END);
-    len = ftell (file);
-    fseek (file, 0, SEEK_SET);
-    buf = malloc (sizeof(char) * len);
-    if (buf)
-    {
-      fread (buf, 1, len, file);
-    }
-    fclose (file);
-  }
-
-  if (buf){
-    return buf;
-  }
-  return NULL;
-}
-
 void on_hash_file(GtkButton *button, GtkTextView *text_label){
 
   GtkTextBuffer * buffer;
   GtkTextIter start,end; 
   char *input =readFile(file_path);
-  char *md5 = md5digest(input);
+  char *hash;
 
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
-  gtk_text_buffer_delete(buffer,&start,&end);
-  gtk_text_buffer_insert(buffer,&end,md5,-1);
+
+  if (strcmp(algo_value, "MD5") == 0){
+
+    hash = md5digest(input);
+
+    gtk_text_buffer_delete(buffer,&start,&end);
+      gtk_text_buffer_get_start_iter(buffer, &start);     
+      gtk_text_buffer_get_end_iter(buffer, &end);
+      gtk_text_buffer_insert(buffer,&end,hash,-1);
+  }
+
+  if (strcmp(algo_value, "SHA1") == 0){
+
+    hash = sha1digest(input);
+
+    gtk_text_buffer_delete(buffer,&start,&end);
+      gtk_text_buffer_get_start_iter(buffer, &start);     
+      gtk_text_buffer_get_end_iter(buffer, &end);
+      gtk_text_buffer_insert(buffer,&end,hash,-1);
+  }
+
+  if (strcmp(algo_value, "SHA2") == 0){
+
+    hash = sha2_appel(input);
+
+    gtk_text_buffer_delete(buffer,&start,&end);
+      gtk_text_buffer_get_start_iter(buffer, &start);     
+      gtk_text_buffer_get_end_iter(buffer, &end);
+      gtk_text_buffer_insert(buffer,&end,hash,-1);
+  }
+
+  if (strcmp(algo_value, "HMAC-SHA1") == 0){
+
+    gtk_dialog_run(GTK_DIALOG (dialogHash));
+
+    hash = hmac_sha1(hmacKey,input);
+
+    gtk_text_buffer_delete(buffer,&start,&end);
+      gtk_text_buffer_get_start_iter(buffer, &start);     
+      gtk_text_buffer_get_end_iter(buffer, &end);
+      gtk_text_buffer_insert(buffer,&end,hash,-1);
+
+    }
+
 }
 
