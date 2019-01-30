@@ -3,6 +3,8 @@
 #include "hash/fonctionSha2.c"
 #include "hash/traitementSha2.c"
 #include "hash/hashlib.c"
+#include "hash/SHA3IUF/sha3test.c"
+#include "hash/SHA3IUF/sha3.c"
 
 //historique
 #include "historique/main_historique.c"
@@ -931,6 +933,16 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
     gtk_text_buffer_insert(buffer,&end,hash,-1);
     }
 
+    if (strcmp(algo_value, "SHA3") == 0){ 
+
+    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+    hash = sha3_keccak(input);  
+
+    gtk_text_buffer_delete(buffer,&start,&end); 
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_insert(buffer,&end,hash,-1);
+    }
+
   if (strcmp(algo_value, "HMAC-SHA1") == 0){
 
 
@@ -985,6 +997,16 @@ void on_hash_file(GtkButton *button, GtkTextView *text_label){
   if (strcmp(algo_value, "SHA2") == 0){
 
     hash = sha2_appel(input);
+
+    gtk_text_buffer_delete(buffer,&start,&end);
+      gtk_text_buffer_get_start_iter(buffer, &start);     
+      gtk_text_buffer_get_end_iter(buffer, &end);
+      gtk_text_buffer_insert(buffer,&end,hash,-1);
+  }
+
+  if (strcmp(algo_value, "SHA3") == 0){
+
+    hash = sha3_keccak(input);
 
     gtk_text_buffer_delete(buffer,&start,&end);
       gtk_text_buffer_get_start_iter(buffer, &start);     
