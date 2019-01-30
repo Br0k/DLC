@@ -383,6 +383,8 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
   return buf;
 }
 
+
+
 GtkWidget * ReturnDialogAES(char * TypeAES){
   GtkWidget * AESDialog;
 
@@ -393,9 +395,39 @@ GtkWidget * ReturnDialogAES(char * TypeAES){
   else{
      AESDialog = GTK_WIDGET(dialog_AES_CBC);
   }
-  return AESDialog;
-}  
+  return AESDialog;}  
 
+void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
+  char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
+  printf("%s et type %s\n",filename ,TypeAES);
+
+  if(TypeAES==NULL)
+    printErreur("Vous devez choisir votre AES !");
+  else{
+    if(filename==NULL)
+      printErreur("Selectionner un fichier !");
+    else{
+      int lenPaddedMessage;
+      uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename);
+      if(key==NULL)
+      {
+        GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
+        gtk_dialog_run(GTK_DIALOG(AESDialog)); 
+      }        
+      uint8_t **enc_msg;
+      if(key!=NULL)
+      {
+        enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
+        char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
+        //TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
+      }
+    }
+  }
+  key=NULL;
+  IV=NULL;
+  free(IV);
+  free(key); 
+}
 
 char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,GtkTextView *text_label,int size){
   int decimal;
@@ -417,39 +449,6 @@ char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,Gt
   }
   return result_history;
 
-}
-
-void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
-  char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
-  printf("%s et type %s\n",filename ,TypeAES);
-
-  if(TypeAES==NULL)
-    printErreur("Vous devez choisir votre AES !");
-  else{
-    if(filename==NULL)
-      printErreur("Selectionner un fichier !");
-    else{
-      int lenPaddedMessage;
-      uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename);
-      if(key==NULL)
-      {
-        GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
-        gtk_dialog_run(GTK_DIALOG(AESDialog)); 
-      }        
-        uint8_t **enc_msg;
-      if(key!=NULL)
-      {
-        enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
-
-        //char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL);
-        TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
-      }
-    }
-  }
-  key=NULL;
-  IV=NULL;
-  free(IV);
-  free(key); 
 }
 
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
@@ -528,122 +527,6 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 }
 
 
-void DECRYPT_AES(GtkButton *button, GtkTextView *text_label){
-
-  GtkTextBuffer *buffer;
-  GtkTextIter start,end;
-  char* message;
-  char * history;
-  char * result_history;
-  //ON recupere le message dans la textBox si il est pas trop grand
-  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-  gtk_text_buffer_get_start_iter(buffer, &start);
-  gtk_text_buffer_get_end_iter(buffer, &end);
-  message=gtk_text_buffer_get_text(buffer,&start,&end,-1);
-  history=malloc(sizeof(char*)*sizeof(message));
-  result_history=(char *)calloc(sizeof(message),sizeof(char*));
-
-  strcpy(history,message);
-
-  if(file_path==NULL && (strlen(message)==0))
-    printErreur("Aucun données a chiffrer !");
-
-  else{
-    if(file_path!=NULL && (strlen(message)==0))
-    {
-      int lenPaddedMessage;
-      unsigned char ** chiffre= TraitementFile("rb",NULL,0,&lenPaddedMessage,NULL);
-      printf("%d\n",lenPaddedMessage );
-      if(key==NULL)
-      {
-        GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
-        //GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
-        gtk_dialog_run(GTK_DIALOG(AESDialog)); 
-      }
-      
-      unsigned char* enc_msg;
-      for (int i = 0; i < lenPaddedMessage; i++)
-      {
-        for (int y = 0; y < 16; y++)
-        {
-          printf("%02X",(unsigned char) *(chiffre[i]+y) );
-        }
-        printf("\n");
-      }
-
-
-      if(key!=NULL)
-      {
-        int lenKey = sizeof(key);
-        enc_msg = AES_decrypt((unsigned char*)key, (unsigned char *)chiffre, lenKey, lenPaddedMessage);
-
-        //char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL);
-        TraitementFile("w",(unsigned char**)enc_msg,lenPaddedMessage,NULL,NULL);
-      }      
-    }else{
-      if ((strlen(message)!=47))
-        printErreur("La longueur du bloc doit etre de 16 !");
-      else{
-        //Fonction AES
-        unsigned char **MsgToAES; 
-        char* cs;
-        MsgToAES=malloc(sizeof(uint8_t*)*1);
-        MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
-   
-
-        for (int i = 0; (cs = strtok ((char*)message," ")); i++)
-        {
-          int tmp = hexadecimalToDecimal(cs); 
-          MsgToAES[0][i]=(uint8_t)tmp;
-          message = NULL; 
-        }
-        if(key==NULL)   
-        {
-          GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
-          //GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
-          gtk_dialog_run(GTK_DIALOG(AESDialog));
-
-        }
-        
-        for (int i = 0; i < 16; ++i)
-        {
-          printf("%02X ",(unsigned char) (MsgToAES[0][i]) );
-        }
-        if (key != NULL)
-        {
-          uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,1,IV);
-          char tmp[16];
-          int decimal;
-          //Pour supprimer
-          buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-          gtk_text_buffer_get_end_iter(buffer,&end);
-          gtk_text_buffer_delete(buffer,&start,&end);
-          //Pour ajouter
-          buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-          gtk_text_buffer_get_end_iter(buffer,&end);
-          
-          for (int i = 0; i < 16; ++i) 
-          {
-            decimal=msg[0][i];
-            sprintf(tmp,"%02X",decimal);
-            g_print ("You chose %d\n ",msg[0][i]);
-            char * msgEncrypt= strcat(tmp," ");
-            strcat(result_history,tmp);
-
-            gtk_text_buffer_insert(buffer,&end,msgEncrypt,-1); 
-          }
-
-          Historique(history,result_history,TypeAES,NULL);
-
-        }         
-      }
-    }
-    key=NULL;
-    IV=NULL;
-    free(IV);
-    free(key);
-}
-}
 
 
 void Changed_AES(GtkComboBox *comboBox){
