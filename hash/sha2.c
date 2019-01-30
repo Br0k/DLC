@@ -1,6 +1,9 @@
 #include "tete.h"
 
-char *sha2_appel(char *str){ // valeur du text box en paramètre
+int main(){
+//char *sha2_appel(char *str){ // valeur du text box en paramètre
+	char * str;
+	str = "hello world";
 	//*****************************************************
 	mpz_t a,b,c,d,e,f,g,h;
 	mpz_t valeurH[8];
@@ -11,14 +14,6 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 	char * chaine = malloc(64 * sizeof(char));
 	int nombreDetours;
 	mpz_t sum1,sum0,ch,maj,tmp1,tmp2,sig1,sig0;
-	char * inter = malloc(sizeof(char) * strlen(str));
-
-	for (int i = 0; i < strlen(str); ++i)
-	{
-		inter[i] = '\0';
-	}
-
-	strcpy(inter,str);
 	//*****************************************************	
 	//printf("SHA 2 ok\n");
 
@@ -28,8 +23,8 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 	initialiserK_valeurConstante(k_values);
 	
 	chaineAtraiter="";
-	chaineAtraiter = malloc( tailleAallouer(strlen(inter)) * sizeof(char)); // textbox valeur
-	strcpy(chaineAtraiter,initialiserBlockData(inter,blockData));
+	chaineAtraiter = malloc( tailleAallouer(strlen(str)) * sizeof(char)); // textbox valeur
+	strcpy(chaineAtraiter,initialiserBlockData(str,blockData));
 
 	//initialiserBlockData("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
 	
@@ -101,5 +96,6 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 		strcat(resultat,partie);
 	}
 	
-	return resultat;
+	printf("%s \n", resultat);
+	return 0;
 }
