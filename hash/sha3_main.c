@@ -5,7 +5,7 @@ int constanteOffsetRotation [5][5] ={{0,1,62,28,27},{36,44,6,55,20},{3,10,43,25,
 
 etat finalData[64]; // represente S
 
-int main (int argc, char **argv){
+int main_Sha3 (int argc, char **argv){
 	char x,y,z;
 	x='0';
 	y='0';

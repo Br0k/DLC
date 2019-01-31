@@ -1,6 +1,7 @@
 #include "tete.h"
 
-char *sha2_appel(char *str){ // valeur du text box en paramètre
+char *sha2_appel(char *str){
+// // valeur du text box en paramètre
 	//*****************************************************
 	mpz_t a,b,c,d,e,f,g,h;
 	mpz_t valeurH[8];
@@ -93,5 +94,6 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 		strcat(resultat,partie);
 	}
 	
-	return resultat;
+	printf("%s \n", resultat);
+	return 0;
 }
