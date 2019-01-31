@@ -143,7 +143,7 @@ int main(int argc, char *argv []){
   gtk_builder_connect_signals(builder, NULL);
 
   maFile = initialiser(); 
-  maFile = Lecture();
+  maFile = Lecture();²
   afficherFile(maFile,label); 
   g_signal_connect (G_OBJECT(window), "destroy",G_CALLBACK(destroy), NULL);  
 
