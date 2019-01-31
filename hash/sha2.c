@@ -27,13 +27,6 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 	chaineAtraiter = malloc( tailleAallouer(strlen(str)) * sizeof(char)); // textbox valeur
 	strcpy(chaineAtraiter,initialiserBlockData(str,blockData));
 
-	//initialiserBlockData("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq");
-	for (int i = 0; i < 8; i++)
-		gmp_printf("%Zx ", valeurH[i]);
-	printf("\n");
-	
-
-	char *x = malloc(32*sizeof(char));
 	nombreDetours  = strlen(chaineAtraiter)/512;
 	for (int j = 0 ; j < nombreDetours; j++ ){
 		copieConstante(valeurH,a,b,c,d,e,f,g,h);
@@ -103,7 +96,6 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 		strcpy(partie,mpz_get_str(NULL,16,valeurH[i]));
 		strcat(resultat,partie);
 	}
-	printf("%s \n", resultat);
 	return resultat;
 	
 }
