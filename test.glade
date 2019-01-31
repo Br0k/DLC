@@ -84,7 +84,7 @@
   </object>
   <object class="GtkDialog" id="DialogHash">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">HMAC Key</property>
+    <property name="title" translatable="yes">AES</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
@@ -92,7 +92,7 @@
       <placeholder/>
     </child>
     <child internal-child="vbox">
-      <object class="GtkBox" id="HMAC Key">
+      <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -720,7 +720,6 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <signal name="clicked" handler="Decrypt_AES" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
