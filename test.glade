@@ -291,12 +291,13 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <items>
+                      <item translatable="yes">Génération de clés RSA</item>
                       <item translatable="yes">Chiffrement RSA</item>
-                      <item translatable="yes">Dechiffrement RSA</item>
+                      <item translatable="yes">Déchiffrement RSA</item>
                       <item translatable="yes">Signature RSA</item>
                       <item translatable="yes">Vérification</item>
-                      <item translatable="yes">Génération de clés RSA</item>
                     </items>
+                    <signal name="changed" handler="rsaList" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -312,6 +313,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <signal name="clicked" handler="on_click_rsa" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
