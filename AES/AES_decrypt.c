@@ -526,7 +526,7 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
     //plaintext[pos] = AES_encrypt(message[i],expandedKeys,Nr,lenExpendKey);
     plaintext[pos] = AES_decrypt(MsgToAES[i],expandedKeys,Nr,lenExpendKey);
     
-    if (i == 0)
+    if (i == 0 && IV!=NULL)
     {
       for (int j = 0; j < 16; j++)
       {

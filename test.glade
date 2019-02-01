@@ -84,7 +84,7 @@
   </object>
   <object class="GtkDialog" id="DialogHash">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">HMAC Key</property>
+    <property name="title" translatable="yes">AES</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
@@ -92,7 +92,7 @@
       <placeholder/>
     </child>
     <child internal-child="vbox">
-      <object class="GtkBox" id="HMAC Key">
+      <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -145,6 +145,77 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkDialog" id="DialogRSAKey">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">RSA</property>
+    <property name="resizable">False</property>
+    <property name="type_hint">dialog</property>
+    <property name="deletable">False</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Annuler</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Accepter</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBoxText">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="active">0</property>
+            <items>
+              <item translatable="yes">512 bits</item>
+              <item translatable="yes">1024 bits</item>
+              <item translatable="yes">2048 bits</item>
+            </items>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>
@@ -290,12 +361,13 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <items>
+                      <item translatable="yes">Génération de clés RSA</item>
                       <item translatable="yes">Chiffrement RSA</item>
                       <item translatable="yes">Dechiffrement RSA</item>
                       <item translatable="yes">Signature RSA</item>
                       <item translatable="yes">Vérification</item>
-                      <item translatable="yes">Génération de clés RSA</item>
                     </items>
+                    <signal name="changed" handler="rsaList" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -311,6 +383,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <signal name="clicked" handler="on_click_rsa" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
