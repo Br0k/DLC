@@ -19,11 +19,8 @@
 #include <gtk/gtk.h>
 
 gchar * distro;
-gchar * algo;
+gchar * hashAlgo;
 gchar * AES;
-gchar * Combobox1;
-gchar * Combobox2;
-gchar * algo_value;
 gchar * TypeAES;
 gchar *hmacKey;
 char* file_path;
@@ -62,6 +59,48 @@ static void destroy( GtkWidget *widget){
   gtk_main_quit ();
   g_object_unref(builder);
 } 
+
+int main(int argc, char *argv []){
+   
+
+  gtk_init(&argc, &argv);
+  builder = gtk_builder_new();
+  gtk_builder_add_from_file (builder, "test.glade", NULL);
+
+  window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
+
+  dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
+  dialog_AES_CBC = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES_CBC"));
+  dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
+  DialogRSA = GTK_WIDGET(gtk_builder_get_object(builder, "DialogRSA"));
+  
+  label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
+  hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
+  eye_image = GTK_WIDGET(gtk_builder_get_object(builder,"eye"));
+  Entry_AES_KEY = GTK_WIDGET(gtk_builder_get_object(builder,"keyAES"));
+  Entry_AES_KEY_CBC = GTK_WIDGET(gtk_builder_get_object(builder,"keyAESCBC"));
+  
+  gtk_window_set_transient_for(GTK_WINDOW(dialog_AES),GTK_WINDOW(window));
+  gtk_window_set_attached_to(GTK_WINDOW(window),dialog_AES);
+
+  gtk_window_set_transient_for(GTK_WINDOW(dialog_AES_CBC),GTK_WINDOW(window));
+  gtk_window_set_attached_to(GTK_WINDOW(window),dialog_AES_CBC);
+
+  gtk_window_set_transient_for(GTK_WINDOW(dialogHash),GTK_WINDOW(window));
+  gtk_window_set_attached_to(GTK_WINDOW(window),dialogHash);
+
+  gtk_builder_connect_signals(builder, NULL);
+
+  maFile = initialiser(); 
+  maFile = Lecture();
+  afficherFile(maFile,label); 
+  g_signal_connect (G_OBJECT(window), "destroy",G_CALLBACK(destroy), NULL);  
+
+  gtk_widget_show(window);                
+  gtk_main();
+
+
+  return 0;}
 
 void Historique(char* op1,char* op2,char* type,char* type2){
 
@@ -116,49 +155,6 @@ int hexadecimalToDecimal(char hexVal[]) {
     return dec_val; 
 } 
 
-int main(int argc, char *argv []){
-   
-
-  gtk_init(&argc, &argv);
-  builder = gtk_builder_new();
-  gtk_builder_add_from_file (builder, "test.glade", NULL);
-
-  window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
-
-  dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
-  dialog_AES_CBC = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES_CBC"));
-  dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
-  DialogRSA = GTK_WIDGET(gtk_builder_get_object(builder, "DialogRSA"));
-  
-  label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
-  hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
-  eye_image = GTK_WIDGET(gtk_builder_get_object(builder,"eye"));
-  Entry_AES_KEY = GTK_WIDGET(gtk_builder_get_object(builder,"keyAES"));
-  Entry_AES_KEY_CBC = GTK_WIDGET(gtk_builder_get_object(builder,"keyAESCBC"));
-  
-  gtk_window_set_transient_for(GTK_WINDOW(dialog_AES),GTK_WINDOW(window));
-  gtk_window_set_attached_to(GTK_WINDOW(window),dialog_AES);
-
-  gtk_window_set_transient_for(GTK_WINDOW(dialog_AES_CBC),GTK_WINDOW(window));
-  gtk_window_set_attached_to(GTK_WINDOW(window),dialog_AES_CBC);
-
-  gtk_window_set_transient_for(GTK_WINDOW(dialogHash),GTK_WINDOW(window));
-  gtk_window_set_attached_to(GTK_WINDOW(window),dialogHash);
-
-  gtk_builder_connect_signals(builder, NULL);
-
-  maFile = initialiser(); 
-  maFile = Lecture();
-  afficherFile(maFile,label); 
-  g_signal_connect (G_OBJECT(window), "destroy",G_CALLBACK(destroy), NULL);  
-
-  gtk_widget_show(window);                
-  gtk_main();
-
-
-  return 0;}
-
-
 
 void import_path(GtkFileChooserButton *btn){
 
@@ -175,10 +171,9 @@ void hashList(GtkComboBox *widget){
   index = gtk_combo_box_get_active (GTK_COMBO_BOX(combo_box));
   
   if (index != -1) {
-    algo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
+    hashAlgo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
     //int i = gtk_combo_box_get_active(combo_box);
-    algo_value = algo;
-   g_print ("Choix : %s\n", algo);
+   g_print ("Choix : %s\n", hashAlgo);
    
   }  
 }
@@ -384,7 +379,7 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
         }
       }
       int reste = len%16;
-      int last =lenPadde-1;
+      int last =lenPadde;
       if(reste!=0)
       {
         fgets((uint8_t*)buf[last], reste, file);
@@ -908,130 +903,149 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
 
-  if (strcmp(algo_value, "MD5") == 0){
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = md5digest(input);
-
-    gtk_text_buffer_delete(buffer,&start,&end);
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
-    }
-
-  if (strcmp(algo_value, "SHA1") == 0){
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = sha1digest(input);
-
-    gtk_text_buffer_delete(buffer,&start,&end);
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
-    }
- 
-    if (strcmp(algo_value, "SHA2") == 0){ 
-
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = sha2_appel(input);  
-
-    gtk_text_buffer_delete(buffer,&start,&end); 
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
-    }
-
-    if (strcmp(algo_value, "SHA3") == 0){ 
-
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = sha3_keccak(input);  
-
-    gtk_text_buffer_delete(buffer,&start,&end); 
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
-    }
-
-  if (strcmp(algo_value, "HMAC-SHA1") == 0){
-
-
-    gtk_dialog_run(GTK_DIALOG (dialogHash));
-
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = hmac_sha1(hmacKey,input);
-
-    gtk_text_buffer_delete(buffer,&start,&end);
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_get_start_iter(buffer, &start);     
-    gtk_text_buffer_get_end_iter(buffer, &end);
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
-    
+  if (hashAlgo==NULL){
+  	printErreur("Choisir un algo de hachage");
   }
-  
-  //char tmp[1024];
-  Historique(input,hash,algo_value,NULL);
+
+  else{ 	
+
+	  if (strcmp(hashAlgo, "MD5") == 0){
+	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+	    hash = md5digest(input);
+
+	    gtk_text_buffer_delete(buffer,&start,&end);
+	    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	    }
+
+	  if (strcmp(hashAlgo, "SHA1") == 0){
+	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+	    hash = sha1digest(input);
+
+	    gtk_text_buffer_delete(buffer,&start,&end);
+	    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	    }
+	 
+	    if (strcmp(hashAlgo, "SHA2") == 0){ 
+
+	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+	    hash = sha2_appel(input);  
+
+	    gtk_text_buffer_delete(buffer,&start,&end); 
+	    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	    }
+
+	    if (strcmp(hashAlgo, "SHA3") == 0){ 
+
+	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+	    hash = sha3_keccak(input);  
+
+	    gtk_text_buffer_delete(buffer,&start,&end); 
+	    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	    }
+
+	  if (strcmp(hashAlgo, "HMAC-SHA1") == 0){
+
+
+	    gtk_dialog_run(GTK_DIALOG (dialogHash));
+
+	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+	    hash = hmac_sha1(hmacKey,input);
+
+	    gtk_text_buffer_delete(buffer,&start,&end);
+	    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	    gtk_text_buffer_get_start_iter(buffer, &start);     
+	    gtk_text_buffer_get_end_iter(buffer, &end);
+	    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	    
+	  }
+	    Historique(input,hash,hashAlgo,NULL);
+	    free(input);
+	    free(hash);
+	}
 }
 
 void on_hash_file(GtkButton *button, GtkTextView *text_label){
 
   GtkTextBuffer * buffer;
-  GtkTextIter start,end; 
-  char *input =readFile(file_path);
+  GtkTextIter start,end;
+  char *input;
   char *hash;
 
-  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-  gtk_text_buffer_get_start_iter(buffer, &start);
-  gtk_text_buffer_get_end_iter(buffer, &end);
+  if (file_path==NULL)
+  	printErreur("Veuillez importer un fichier");
 
-  if (strcmp(algo_value, "MD5") == 0){
+  else{  
+	  input =readFile(file_path);
 
-    hash = md5digest(input);
+	  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	  gtk_text_buffer_get_start_iter(buffer, &start);
+	  gtk_text_buffer_get_end_iter(buffer, &end);
 
-    gtk_text_buffer_delete(buffer,&start,&end);
-      gtk_text_buffer_get_start_iter(buffer, &start);     
-      gtk_text_buffer_get_end_iter(buffer, &end);
-      gtk_text_buffer_insert(buffer,&end,hash,-1);
-  }
+	  if (hashAlgo==NULL)
+	  	printErreur("Choisir un algo de hachage");
 
-  if (strcmp(algo_value, "SHA1") == 0){
+	  else{
 
-    hash = sha1digest(input);
+		  if (strcmp(hashAlgo, "MD5") == 0){
 
-    gtk_text_buffer_delete(buffer,&start,&end);
-      gtk_text_buffer_get_start_iter(buffer, &start);     
-      gtk_text_buffer_get_end_iter(buffer, &end);
-      gtk_text_buffer_insert(buffer,&end,hash,-1);
-  }
+		    hash = md5digest(input);
 
-  if (strcmp(algo_value, "SHA2") == 0){
+		    gtk_text_buffer_delete(buffer,&start,&end);
+		      gtk_text_buffer_get_start_iter(buffer, &start);     
+		      gtk_text_buffer_get_end_iter(buffer, &end);
+		      gtk_text_buffer_insert(buffer,&end,hash,-1);
+		  }
 
-    hash = sha2_appel(input);
+		  if (strcmp(hashAlgo, "SHA1") == 0){
 
-    gtk_text_buffer_delete(buffer,&start,&end);
-      gtk_text_buffer_get_start_iter(buffer, &start);     
-      gtk_text_buffer_get_end_iter(buffer, &end);
-      gtk_text_buffer_insert(buffer,&end,hash,-1);
-  }
+		    hash = sha1digest(input);
 
-  if (strcmp(algo_value, "SHA3") == 0){
+		    gtk_text_buffer_delete(buffer,&start,&end);
+		      gtk_text_buffer_get_start_iter(buffer, &start);     
+		      gtk_text_buffer_get_end_iter(buffer, &end);
+		      gtk_text_buffer_insert(buffer,&end,hash,-1);
+		  }
 
-    hash = sha3_keccak(input);
+		  if (strcmp(hashAlgo, "SHA2") == 0){
 
-    gtk_text_buffer_delete(buffer,&start,&end);
-      gtk_text_buffer_get_start_iter(buffer, &start);     
-      gtk_text_buffer_get_end_iter(buffer, &end);
-      gtk_text_buffer_insert(buffer,&end,hash,-1);
-  }
+		    hash = sha2_appel(input);
 
-  if (strcmp(algo_value, "HMAC-SHA1") == 0){
+		    gtk_text_buffer_delete(buffer,&start,&end);
+		      gtk_text_buffer_get_start_iter(buffer, &start);     
+		      gtk_text_buffer_get_end_iter(buffer, &end);
+		      gtk_text_buffer_insert(buffer,&end,hash,-1);
+		  }
 
-    gtk_dialog_run(GTK_DIALOG (dialogHash));
+		  if (strcmp(hashAlgo, "SHA3") == 0){
 
-    hash = hmac_sha1(hmacKey,input);
+		    hash = sha3_keccak(input);
 
-    gtk_text_buffer_delete(buffer,&start,&end);
-      gtk_text_buffer_get_start_iter(buffer, &start);     
-      gtk_text_buffer_get_end_iter(buffer, &end);
-      gtk_text_buffer_insert(buffer,&end,hash,-1);
+		    gtk_text_buffer_delete(buffer,&start,&end);
+		      gtk_text_buffer_get_start_iter(buffer, &start);     
+		      gtk_text_buffer_get_end_iter(buffer, &end);
+		      gtk_text_buffer_insert(buffer,&end,hash,-1);
+		  }
 
-    }
-    free(input);
-    free(hash);
+		  if (strcmp(hashAlgo, "HMAC-SHA1") == 0){
 
+		    gtk_dialog_run(GTK_DIALOG (dialogHash));
+
+		    hash = hmac_sha1(hmacKey,input);
+
+		    gtk_text_buffer_delete(buffer,&start,&end);
+		      gtk_text_buffer_get_start_iter(buffer, &start);     
+		      gtk_text_buffer_get_end_iter(buffer, &end);
+		      gtk_text_buffer_insert(buffer,&end,hash,-1);
+
+		    }
+		    free(input);
+		    free(hash);
+		}
+	}
 }
 
 void on_change_key(GtkButton *button, GtkEntry *entry)
