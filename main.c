@@ -36,12 +36,15 @@ unsigned char * IV=NULL;
 GtkWidget *window;
 GtkWidget *dialog_AES;
 GtkWidget *dialog_AES_CBC;
+GtkWidget *DialogRSA;
 GtkWidget *dialogHash;
 GtkWidget *hide_image;
 GtkWidget *eye_image;
 
 GtkEntry *Entry_AES_IV;
+GtkEntry *Entry_AES;
 GtkEntry *Entry_AES_KEY;
+GtkEntry *Entry_AES_KEY_CBC;
 GtkBuilder *builder;  
 
 
@@ -125,11 +128,13 @@ int main(int argc, char *argv []){
   dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
   dialog_AES_CBC = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES_CBC"));
   dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
+  DialogRSA = GTK_WIDGET(gtk_builder_get_object(builder, "DialogRSA"));
   
   label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
   hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
   eye_image = GTK_WIDGET(gtk_builder_get_object(builder,"eye"));
   Entry_AES_KEY = GTK_WIDGET(gtk_builder_get_object(builder,"keyAES"));
+  Entry_AES_KEY_CBC = GTK_WIDGET(gtk_builder_get_object(builder,"keyAESCBC"));
   
   gtk_window_set_transient_for(GTK_WINDOW(dialog_AES),GTK_WINDOW(window));
   gtk_window_set_attached_to(GTK_WINDOW(window),dialog_AES);
@@ -232,6 +237,8 @@ void Dialog_AES_CBC_click_Annuler(GtkButton *button,GtkEntry *entry)
   gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"");
   gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"Entrer votre IV...");
   gtk_widget_hide((GtkWidget*)dialog_AES_CBC);
+  key=NULL;
+  free(key);
 }
 
 void DialogHash_cancel(GtkButton *button,GtkEntry *entry){
@@ -288,7 +295,8 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
   {
     printErreur("Taille de clé incorrecte !");
   }
-  else{
+  else
+  {
     key = malloc(lenAES);
     char* cs;
     for (int i = 0; (cs = strtok ((char*)entry_text_key, " ")); i++)
@@ -299,27 +307,36 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
       entry_text_key = NULL;
       
     }
-  }
-  const gchar* entry_text_IV;
-  entry_text_IV = gtk_entry_get_text(GTK_ENTRY (Entry_AES_IV));
-  printf("%s\n",(char*)entry_text_IV );
-  IV = malloc(sizeof(char*)*16);
-  char* cs;
-  for (int i = 0; (cs = strtok ((char*)entry_text_IV, " ")); i++)
-    {
-      int tmp = hexadecimalToDecimal(cs); 
-      
-      IV[i]=tmp;
-      printf("%02X ", (unsigned char) *(IV+i));       
-      entry_text_IV = NULL;
-      
-    }
+    
 
-    gtk_entry_set_text(Key_Entry,"");
-    gtk_entry_set_text(Key_Entry,"Entrer votre clé AES ...");
-    gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"");
-    gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"Entrer votre IV...");
-    gtk_widget_hide((GtkWidget*)dialog_AES_CBC);}
+    const gchar* entry_text_IV;
+    entry_text_IV = gtk_entry_get_text(GTK_ENTRY (Entry_AES_IV));
+    if(strlen(entry_text_IV)== 32+15)
+    {
+      printf("%s\n",(char*)entry_text_IV );
+      IV = malloc(sizeof(char*)*16);
+      char* character;
+      for (int i = 0; (character = strtok ((char*)entry_text_IV, " ")); i++)
+        {
+          int tmp = hexadecimalToDecimal(character); 
+          
+          IV[i]=tmp;
+          printf("%02X ", (unsigned char) *(IV+i));       
+          entry_text_IV = NULL;
+          
+        }
+      gtk_entry_set_text(Key_Entry,"");
+      gtk_entry_set_text(Key_Entry,"Entrer votre clé AES ...");
+      gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"");
+      gtk_entry_set_text(GTK_ENTRY(entry_text_IV),"Entrer votre IV...");
+      gtk_widget_hide((GtkWidget*)dialog_AES_CBC);
+    }else{
+      printErreur("Taille de l'IV incorrecte !");
+    }
+  }
+}
+
+    
 
 
 uint8_t ** InitTableau(int size){
@@ -411,9 +428,11 @@ GtkWidget * ReturnDialogAES(char * TypeAES){
   if(strcmp("AES 128",TypeAES)==0 || strcmp("AES 192",TypeAES)==0 || strcmp("AES 256",TypeAES)==0)
   {
      AESDialog = GTK_WIDGET(dialog_AES) ;
+     Entry_AES = GTK_ENTRY(Entry_AES_KEY);
   }
   else{
      AESDialog = GTK_WIDGET(dialog_AES_CBC);
+     Entry_AES = GTK_ENTRY(Entry_AES_KEY_CBC);
   }
   return AESDialog;}  
 
@@ -429,11 +448,12 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
     else{
       int lenPaddedMessage;
       uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename,btn);
-      if(key==NULL)
-      {
-        GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
-        gtk_dialog_run(GTK_DIALOG(AESDialog)); 
-      }        
+      if(key!=NULL)
+        gtk_entry_set_text(Entry_AES,keyHex);
+
+      GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
+      gtk_dialog_run(GTK_DIALOG(AESDialog)); 
+       
       uint8_t **enc_msg;
       if(key!=NULL)
       {
@@ -516,7 +536,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
           if(key!=NULL)
           {
 
-           gtk_entry_set_text(Entry_AES_KEY,keyHex);
+           gtk_entry_set_text(Entry_AES,keyHex);
           }
           
           gtk_dialog_run(GTK_DIALOG(AESDialog));
