@@ -40,6 +40,7 @@ char * paddingChaine(char * chaine, int nombreDeBitsArespecter){
 	for (int i = 0 ; i < strlen(chaine); i++ )
 		sprintf( resultat + i + decallage,"%c",chaine[i]);
 	return resultat;
+	free(resultat);
 }
 void nettoyer(char * chaine,int taille){
 	for (int i = 0; i < taille; i++)
@@ -54,6 +55,7 @@ void recuppererBlockPartie(char *block, int position, mpz_t data){
 	for (int i = debut; i < debut+32; i++ )
 		sprintf(chaine,"%s%c",chaine,block[i]);
 	mpz_set_str(data,chaine,2);
+	free(chaine);
 }
 
 
@@ -144,4 +146,6 @@ char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	
 	return chaineAtraiter;
 
+	free(chaineAtraiter);
+	free(elt);
 }
