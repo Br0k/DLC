@@ -1,4 +1,4 @@
-#include "tete.h"
+#include "header.h"
 
 
 void initialiserK_valeurConstante(mpz_t k_values[64]){

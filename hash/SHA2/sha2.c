@@ -1,4 +1,4 @@
-#include "tete.h"
+#include "header.h"
 
 
 char *sha2_appel(char *str){ // valeur du text box en paramètre
