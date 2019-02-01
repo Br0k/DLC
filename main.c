@@ -34,8 +34,10 @@ gchar *rsaValue;
 char* file_path;
 int lenAES;
 mpz_t a;
+gchar *RSAKeyLenChoice;
+int RSAKeyLen;
 
-unsigned char* key;
+unsigned char *key;
 unsigned char *keyHex;
 unsigned char * IV=NULL;
 
@@ -275,6 +277,43 @@ void DialogHash_send(GtkButton *button,GtkEntry *entry){
   gtk_entry_set_text(GTK_ENTRY (entry),"");
   gtk_entry_set_text(GTK_ENTRY (entry),"Entrer une clé : ");
   gtk_widget_hide((GtkWidget*)dialogHash);
+}
+
+void DialogRSA_cancel(GtkButton *button, GtkEntry *entry)
+{
+	gtk_entry_set_text(entry, "");
+	gtk_entry_set_text(entry, "Entrer une clé : ");
+	gtk_widget_destroy(dialogRSA);
+}
+
+void DialogRSA_send(GtkButton *button, GtkEntry *entry)
+{
+	GtkComboBox *combo_box = widget;
+
+	gint index = -1;
+	index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+
+	if (index != -1)
+	{
+		RSAKeyLenChoice = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
+		g_print("Taille de clé choisie : %s\n", RSAKeyLenChoice);
+	}
+
+	if (strcmp(RSAKeyLenChoice, "512 bits")) {
+		RSAKeyLen = 512;
+	}
+
+	if (strcmp(RSAKeyLenChoice, "1024 bits")) {
+		RSAKeyLen = 1024;
+	}
+
+	if (strcmp(RSAKeyLenChoice, "2048 bits")){
+		RSAKeyLen = 2048;
+	}
+
+	
+
+	gtk_widget_hide((GtkWidget *)dialogRSA);
 }
 
 void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
