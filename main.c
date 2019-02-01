@@ -42,6 +42,7 @@ unsigned char * IV=NULL;
 GtkWidget *window;
 GtkWidget *dialog_AES;
 GtkWidget *dialog_AES_CBC;
+GtkWidget *dialogRSA;
 GtkWidget *dialogHash;
 GtkWidget *hide_image;
 GtkWidget *eye_image;
@@ -204,28 +205,29 @@ void rsaList(GtkComboBox *widget)
 
 char* readFile(char* filename){
 
-  FILE* file = fopen(file_path, "rb");
+  char *buffer = NULL;
+ int string_size, read_size;
+ FILE *handler = fopen(filename, "r");	
 
-  long len;
-  char * buf = 0;
+ if (handler)
+ {
+     fseek(handler, 0, SEEK_END);
+     string_size = ftell(handler);
+     rewind(handler);
+     buffer = (char*) malloc(sizeof(char) * (string_size + 1) );
+     read_size = fread(buffer, sizeof(char), string_size, handler);
+     buffer[string_size] = '\0';
 
-  if (file)
-  {
-    fseek (file, 0, SEEK_END);
-    len = ftell (file);
-    fseek (file, 0, SEEK_SET);
-    buf = malloc (sizeof(char) * len);
-    if (buf)
-    {
-      fread (buf, 1, len, file);
-    }
-    fclose (file);
+     if (string_size != read_size)
+     {
+         free(buffer);
+         buffer = NULL;
+     }
+     fclose(handler);
   }
+  printf("%s\n",buffer );
 
-  if (buf){
-    return buf;
-  }
-  return;
+  return buffer;
 }
 
 void printErreur(char *msg){ 
@@ -365,23 +367,19 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
     if (file){
       fseek (file, 0, SEEK_END);
       len = ftell (file);
+      printf("%d\n",len );
       if(len % 16 !=0)
         lenPaddedMessage = (len/16 +1); 
 
       *lenPaddedMsg=lenPaddedMessage;
-      printf("%d\n",lenPaddedMessage );
       fseek (file, 0, SEEK_SET);
       buf = InitTableau(lenPaddedMessage);
-      printf("%d\n",len );
       int lenPadde = len/16+1;
-      printf("%d\n",lenPaddedMessage );
-      //while (caractereActuel != EOF);
       for (int i = 0; i < lenPaddedMessage-1; i++)
       {
         for (int j = 0; j < 16; j++)
         {
           char tmp = fgetc(file);
-          printf("le tmp : %c\n",tmp);
           if(tmp!='\n')
           {
 
@@ -393,19 +391,22 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
           }
         }
       }
-      printf("apres lecture\n");
       int reste = len%16;
       int last =lenPadde-1;
-      fgets((uint8_t*)buf[last], reste, file);
-
-      for (int i = reste; i < 16; i++)
+      if(reste!=0)
       {
+        fgets((uint8_t*)buf[last], reste, file);
+        printf("je plante ici ?\n");
+        for (int i = reste; i < 16; i++)
+        {
         //strcpy(buf[1][i],(uint8_t)0x00);
-        buf[last][i]=(uint8_t)0x00;
- 
+        buf[last][i]=(uint8_t)0x00; 
+        }
       }
+      
 
     }
+          printf("je plante ici ?\n");
   } 
   if(strcmp(mode,"w")==0)
   {
@@ -418,10 +419,7 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
          
         for (int y = 0; y < lenght; y++)
           for (int i = 0; i < 16; i++)
-            fprintf(file,"%02X",(unsigned char) *(chiffre[y]+i) );
-
-        //buf="";      
-        printf("Mais la je plante surement\n");
+            fprintf(file,"%02X ",(unsigned char) *(chiffre[y]+i) );
     }
     gtk_file_chooser_set_filename (btn,path);
   }
@@ -465,7 +463,6 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       if(key!=NULL)
       {
         enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
-        printf("je passe ici\n");
         char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL,filename,btn);
         //TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
       }
@@ -653,9 +650,7 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
     IV=NULL;
     free(IV);
     free(key);
-  } 
-
-}
+  } }
 
 
 void Changed_AES(GtkComboBox *comboBox){
@@ -1097,6 +1092,8 @@ void on_hash_file(GtkButton *button, GtkTextView *text_label){
       gtk_text_buffer_insert(buffer,&end,hash,-1);
 
     }
+    free(input);
+    free(hash);
 
 }
 
@@ -1115,5 +1112,4 @@ void on_change_key(GtkButton *button, GtkEntry *entry)
     gtk_entry_set_visibility (entry,TRUE);
   }
 
-  
 }

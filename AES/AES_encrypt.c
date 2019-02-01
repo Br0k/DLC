@@ -347,8 +347,8 @@ uint8_t**  Main_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t *I
 	int pos=0;
 	for (int i = 0; i < len; i++)
 	{		
-		printf("To AES\n");
-		print_hex(message[i]);
+		//printf("To AES\n");
+		//print_hex(message[i]);
 		enc_msg[pos] = AES_encrypt(message[i],expandedKeys,Nr,lenExpendKey);
 		//paddedMessage+i = paddedMessage+i ^ enc_msg
 		if(i+1<len && IV!=NULL){
