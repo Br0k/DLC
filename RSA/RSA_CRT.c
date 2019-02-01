@@ -1,5 +1,4 @@
-//gcc -o RSA_CRT RSA_CRT.c -lgmp && ./RSA_CRT
-
+//gcc -o RSA_CRT RSA_CRT.c -lgmp -lcrypto && ./RSA_CRT
 
 #define TRUE 1
 #define FALSE 0
@@ -10,48 +9,99 @@
 #include <time.h>
 #include <stdlib.h>
 #include <memory.h>
-#include "base64.h"
+#include <stdint.h>
+#include"Base64Encode.c"
 
 void formatRsaPublicKey(mpz_t n, mpz_t e) {
-
 	mpz_t hex;
 	mpz_t mpzHeader;
 	mpz_t mpzFooter;
-	mpz_inits(mpzHeader, mpzFooter, hex, NULL);
+	mpz_t header;
+	mpz_inits(mpzHeader, mpzFooter, hex, header, NULL);
 
-	mpz_set_str(mpzHeader, "3082010A0282010100", 16);
-	mpz_set_str(mpzFooter, "0203", 16);
+	unsigned char head[9] = {48, 130, 1, 10, 2, 130, 1, 1, 0};
+	int footer[2];
+	footer[0] = 2;
+	footer[1] = 3;
+	char *strN = mpz_get_str(NULL, 10, n);
+	//gmp_printf("%Zd \n", n);
+	/*for (int i = 0; i < strlen(strN); i++) {
+		printf("%c", strN[i]);
+	}*/
 
-	char *strNdec = mpz_get_str(NULL, 10, n);
-	char* strN = mpz_get_str(NULL, 16, n);
-	char *strE = mpz_get_str(NULL, 16, e);
+	char *strE = mpz_get_str(NULL, 10, e);
 
-	int len;
-	len = strlen("3082010A0282010100") + strlen("0203") + strlen(strE) + strlen(strN);
+	int size = 9 + strlen(strN) + 2 + strlen(strE);
+	printf("size : %ld \n", size);
+	unsigned char *key;
 
-	unsigned char *encoded = malloc(sizeof(char) * len);
-	for (int i = 0; i < len; i++) {
-		encoded[i] = '\0';
+	key = malloc (sizeof(int) * size);
+	for (int i = 0 ; i < size; i++) {
+		key[i] = '\0';
 	}
 
-	strcat(encoded, mpz_get_str(NULL, 16, mpzHeader));
-	strcat(encoded, mpz_get_str(NULL, 16, n));
-	strcat(encoded, mpz_get_str(NULL, 16, mpzFooter));
-	strcat(encoded, mpz_get_str(NULL, 16, e));
+	/*
+	strcat(key, "481301102130110");
+	strcat(key, strN);
+	strcat(key, "0203");
+	strcat(key, strE);
+	printf("%s ", key);*/
 
-	char *b64encoded = b64_encode(encoded, strlen(encoded));
+	for (int i = 0; i < size; i++) {
+		if (i <= strlen(head)) {
+			key[i] = head[i];
+		}
+		else {
+			key[i] = '\0';
+		}
+	}
+	
+	int headSize = strlen(head) +1;
 
-	printf("-----BASE16-----\n");
-	printf("%s \n", encoded);
-	printf("-----BASE16-----\n");
+	for (int i = 0; i < strlen(strN); i++) {
+		unsigned char a = strN[i];
+		key[headSize + i] = a;
+	}
 
+	int nSize = headSize + strlen(strN);
+
+
+	for (int i = 0; i < 2; i++){
+		unsigned char a = footer[i];
+		key[nSize + i] =  a;
+	}
+
+	int  footSize = nSize + 2;
+
+	for (int i =0; i < strlen(strE); i++) {
+		unsigned char a = strE[i];
+		key[footSize + i] = a;
+		//printf("%d ", footSize + i);
+	}
+	
+	
+	for (int i = 0; i < size; i++) {
+		printf("%d ", key[i]);
+		//printf("-> %d \n", i);
+	}
+	key[size] = '\0';
+
+	size_t *output;
+	char *b64text = base64_encode(key, 632, &output);
+	
+	//Base64Encode(key, size, &b64text);
+	//printf("%ld ", strlen(key));
 	printf("-----BEGIN RSA PUBLIC KEY-----\n");
-	printf("%s \n", b64encoded);
+	printf("%s\n", b64text);
 	printf("-----END RSA PUBLIC KEY-----\n");
 
+	printf("-----BEGIN DECODE PUBLIC KEY-----\n");
+	//b64text = base64_decode(b64text, strlen(b64text), &output);
+	//printf("%s\n", b64text);
+	printf("-----END DECODE PUBLIC KEY-----\n");
 }
 
-void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e) {
+void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e, mpz_t d) {
 
 	int booleen = FALSE;
 	gmp_randstate_t state;
@@ -64,6 +114,7 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_t kSurDEux;
 	mpz_t pMoinsUn;
 	mpz_t qMoinsUn;
+	mpz_t phi;
 
 	mpz_init(rand);
 	mpz_init(kSurDEux);
@@ -72,14 +123,15 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_init(pMoinsUn);
 	mpz_init(qMoinsUn);
 	mpz_init(rop);
+	mpz_init(phi);
 	
 	gmp_randinit_default(state);
 	gmp_randseed_ui(state, seed);
-
 	mpz_fdiv_q_ui(kSurDEux, k, 2);
 
 	mpz_ui_pow_ui(powMin, 2, (mpz_get_ui(kSurDEux)-1));
-// Génération de p et q premiers random de taille k/2-bit
+
+	// Génération de p et q premiers random de taille k/2-bit
 	int primeP = FALSE;
 	int primeQ = FALSE;
 	while (primeP == FALSE) {
@@ -112,6 +164,11 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 		}
 	}
 
+	mpz_sub_ui(pMoinsUn, p, 1);
+	mpz_sub_ui(qMoinsUn, q, 1);
+	mpz_mul(phi, pMoinsUn, qMoinsUn);
+	mpz_invert(d, e, phi);
+
 	mpz_mul(n, p, q);
 	mpz_sub_ui(pMoinsUn, p, 1);
 	mpz_invert(dp, e, pMoinsUn);
@@ -119,8 +176,8 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_invert(dq, e, qMoinsUn);
 	mpz_invert(ip, p, q);
 
+
 	formatRsaPublicKey(n, e);
-	
 	
 }
 
@@ -131,24 +188,7 @@ void RSA_Encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
 	gmp_printf("Chiffré = %Zd \n", c);
 }
 
-void RSA_Decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n, mpz_t e, mpz_t p, mpz_t q) {
-	mpz_t phi;
-	mpz_t pMoinsUn;
-	mpz_t qMoinsUn;
-	mpz_t moinsUn;
-	mpz_init(phi);
-	mpz_init(pMoinsUn);
-	mpz_init(qMoinsUn);
-	mpz_init(moinsUn);
-	mpz_set_si(moinsUn, -1);
-
-	mpz_sub_ui(pMoinsUn, p, 1);
-	mpz_sub_ui(qMoinsUn, q, 1);
-	mpz_mul(phi, pMoinsUn, qMoinsUn);
-	gmp_printf("phi = %Zd\n", phi);
-	mpz_invert(d, e, phi);
-	gmp_printf("d = %Zd\n", d);
-
+void RSA_Decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
 	mpz_powm(m, c, d, n);
 	gmp_printf("Déchiffré no Crt : %Zd \n", m);
 }
@@ -192,8 +232,8 @@ void RSA_Verif(mpz_t m, mpz_t sign, mpz_t e, mpz_t n) {
 	}
 }
 
+/*
 int main(int argc, char *argv[]) {
-
 	mpz_t p;
 	mpz_t q;
 	mpz_t n;
@@ -220,13 +260,13 @@ int main(int argc, char *argv[]) {
 	mpz_init(sign);
 	//A supprimer	
 	mpz_set_ui(k, 2048);
-	mpz_set_ui(e, 65537);
+	mpz_set_ui(e, 3);
 
-	RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e);
-	//RSA_Encrypt(c, m, e, n);
-	//RSA_Decrypt(m, c, d, n, e, p, q);
-	//RSA_CRT_Decrypt(m, c, p, q, dp, dq, ip);
-	//RSA_Signature(sign, m, d, n);
-	//RSA_Verif(m, sign, e, n);
+	RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	/*RSA_Encrypt(c, m, e, n);
+	RSA_Decrypt(m, c, d, n);
+	RSA_CRT_Decrypt(m, c, p, q, dp, dq, ip);
+	RSA_Signature(sign, m, d, n);
+	RSA_Verif(m, sign, e, n);
 	return 0;
-}
+}*/
