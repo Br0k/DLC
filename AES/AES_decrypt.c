@@ -216,7 +216,7 @@ void addRoundKey(int round, unsigned char* msg, unsigned char* key, int compteur
 
 	unsigned char tmp[17];
   sprintf((char*)tmp, "round[%2d].ik_sch", compteur);
-	affichage(tmp,16, key);
+	//affichage(tmp,16, key);
 	for (int i = 0; i < 16; ++i)
 	{
 		msg[i] ^= key[i];
@@ -382,6 +382,7 @@ unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, i
 	    sprintf((char*)tmp, "round[%2d].ik_add", compteur);
 	    affichage(tmp, lentravail, travail);
 	    compteur++;
+      printf("\n");
     }
 
     sprintf((char*)tmp, "round[%2d].istart", compteur);
@@ -398,59 +399,101 @@ unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, i
 
     addRoundKey(0,travail,keys, compteur);
     
-    unsigned char* plaintext = (unsigned char*) malloc(16);
+    uint8_t* plaintext = malloc(sizeof(uint8_t*)*16);
     memcpy(plaintext,travail,16);
+    sprintf((char*)tmp, "round[%2d].output", compteur);
+    affichage(tmp,lentravail,plaintext);
 
     return plaintext;
 }
 
-uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t *IV)
+uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_t *IV)
 {
   int Nk=0,Nr=0,lenExpendKey=0; //Nb=4
-  //int lenAES=16;
+  int lenAES;
   //int lenPaddedMessage = len;
   //char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
   //char key[24]={142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
   //char IV[16]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+
   if(strcmp(AES,"AES 128")==0 || strcmp(AES,"AES 128 CBC")==0)
   {
     Nk=4;
     Nr=10;
-    //lenAES=16;
+    lenAES=16;
     lenExpendKey=176;
   }else if (strcmp(AES,"AES 192")==0 || strcmp(AES,"AES 192 CBC")==0)
   {
     Nk=6;
     Nr=12;
-    //lenAES=24;
+    lenAES=24;
     lenExpendKey=208;
   }else
   {
     Nk=8;
     Nr=14;
-    //lenAES=32;
+    lenAES=32;
     lenExpendKey=240;
   }
 
-  uint8_t **plaintext;
-  plaintext=malloc(sizeof(uint8_t *)*len);
+  printf("essai %d\n", *len);
 
-  for (int i = 0; i < len; i++)
+  uint8_t **essai;
+  if (*len == 1)
+  {
+    essai=malloc(sizeof(uint8_t *)*1);
+    essai[0]=malloc(sizeof(uint8_t *)*16);
+  }
+  else {
+    essai=malloc(sizeof(uint8_t *)*(*len));
+    for (int i = 0; i < (*len); ++i)
+    {
+      essai[i]=malloc(sizeof(uint8_t *)*16);
+    }
+  }
+
+  char* cs;
+  int compteur = 0;
+
+  for (int i = 0; cs = strtok ((char*)message, " "); ++i)
+  {
+    int tmp = hexadecimalToDecimal(cs); 
+    essai[i]=tmp;      
+    message = NULL;
+    compteur++;
+  }
+
+  *len = compteur;
+
+  uint8_t **MsgToAES; 
+  MsgToAES=malloc(sizeof(uint8_t*)*compteur/16);
+
+  uint8_t **plaintext;
+  plaintext=malloc(sizeof(uint8_t *)*compteur/16);
+
+  for (int i = 0; i < compteur/16; i++)
   {
     plaintext[i]=malloc(sizeof(uint8_t*)*16);
   }
-  printf("len = %d\n",len );
+  
 
-  for (int i = 0; i < len; i++)
+  printf("\n");
+  for (int i = 0; i < compteur/16; ++i)
   {
-    for (int y = 0; y < 16; y++)
-        {
-          printf("%02X",(unsigned char) (message[i][y]) );
-        }
-        printf("\n");
+    MsgToAES[i]=malloc(sizeof(uint8_t*)*16);
+    for (int j = 0; j < 16; ++j)
+    {
+      MsgToAES[i][j] = (uint8_t)*(essai+(i*16)+j);
+      printf("%02X ", (unsigned char) *(essai+(i*16)+j)); 
+    }
+    printf("\n");
+      
   }
+
+
+  printf("\n");
+  
   unsigned char expandedKeys[lenExpendKey];
-  //KeyExpansion(key,expandedKeys, Nk, Nb, Nr);
 
   InvKeyExpansion(key, expandedKeys, Nk, Nr);
 
@@ -460,7 +503,7 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t
   {
     printf("%02X ",(unsigned char) *(expandedKeys+i));
     saut++;
-    if (saut >= 16)
+    if (saut >= lenAES)
     {
       printf("\n");
       saut = 0;
@@ -468,57 +511,41 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int len,uint8_t
   }
     
   //paddedMessage = IV ^ paddedMessage
-  if(IV != NULL)
-  {
-    for (int i = 0; i <16; i++)
-    {
-      message[0][i] ^= IV[i];
-    }
-  }
+  // if(IV != NULL)
+  // {
+  //   for (int i = 0; i <16; i++)
+  //   {
+  //     MsgToAES[0][i] ^= IV[i];
+  //   }
+  // }
   printf("\nEncrypt message\n");
   int pos=0;
-  for (int i = 0; i < len; i++)
+  for (int i = 0; i < compteur/16; i++)
   {   
-    printf("To AES\n");
-    print_hex(message[i]);
+    //print_hex(MsgToAES[i]);
     //plaintext[pos] = AES_encrypt(message[i],expandedKeys,Nr,lenExpendKey);
-    plaintext[pos] = AES_decrypt(message[i],expandedKeys,Nr,lenExpendKey);
-    //paddedMessage+i = paddedMessage+i ^ plaintext
-    if(i+1<len && IV!=NULL){
-      for (int j = 0; j < 16; j++) 
+    plaintext[pos] = AES_decrypt(MsgToAES[i],expandedKeys,Nr,lenExpendKey);
+    
+    if (i == 0 && IV!=NULL)
+    {
+      for (int j = 0; j < 16; j++)
       {
-        message[i+1][j]=plaintext[pos][j]^message[i+1][j];
+        plaintext[pos][j] ^= IV[j];
       }
     }
-    pos++;
+    //paddedMessage+i = paddedMessage+i ^ plaintext
+    if((i<compteur/16 && IV!=NULL)&& i != 0){
+      for (int j = 0; j < 16; j++) 
+      {
+        printf("i %d, j %d\n", i, j);
+        plaintext[i][j]=plaintext[pos][j]^MsgToAES[i-1][j];
 
+      }
+    }
+    print_hex(plaintext[pos]);
+    pos++;
   }
 
 
-  
   return plaintext;
 }
-
-/*
-
-int main(int argc, char **argv) {
-
-
-	//unsigned char key[16] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    unsigned char key[16] = {156,129,89,42,247,141,3,190,48,62,178,0,241,199,163,213};
-    //unsigned char cipher[16] = {105,196,224,216,106,123,4,48,216,205,183,128,112,180,197,90};
-    unsigned char cipher[16] = {47,94,55,99,207,46,60,153,145,210,69,42,166,4,206,2};
-
-	
-    int lenKey = sizeof(key) / sizeof(key[0]);
-    int lenCipher = sizeof(cipher) / sizeof(cipher[0]);
-
-    unsigned char* sortie =AES_decrypt(key, cipher, lenKey, lenCipher);
-
-    printf("SORTIE\n");
-    unsigned char tmp[17];
-    sprintf((char*)tmp, "round[%2d].ioutpt", 10);
-    affichage(tmp, lenKey, sortie);
-    return 0;
-}
-*/

@@ -1,4 +1,4 @@
-#include "tete.h"
+#include "header.h"
 
 
 char *sha2_appel(char *str){ // valeur du text box en paramètre
@@ -97,6 +97,10 @@ char *sha2_appel(char *str){ // valeur du text box en paramètre
 		strcat(resultat,partie);
 	}
 	return resultat;
+	free(chaine);
+	free(chaineAtraiter);
+	free(partie);
+	free(resultat);
 	
 }
 //sigma 1 et sigma 0 validé
