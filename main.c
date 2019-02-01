@@ -33,7 +33,18 @@ gchar *rsa;
 gchar *rsaValue;
 char* file_path;
 int lenAES;
-mpz_t a;
+mpz_t p;
+mpz_t q;
+mpz_t n;
+mpz_t dp;
+mpz_t dq;
+mpz_t d;
+mpz_t ip;
+mpz_t k;
+mpz_t e;
+mpz_t c;
+mpz_t m;
+mpz_t sign;
 gchar *RSAKeyLenChoice;
 int RSAKeyLen;
 
@@ -134,7 +145,7 @@ int main(int argc, char *argv []){
   dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
   dialog_AES_CBC = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES_CBC"));
   dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
-  dialogRSAKey = GTK_WIDGET(gtk_builder_get_object(builder, "dialogRSAKey"));
+  dialogRSA = GTK_WIDGET(gtk_builder_get_object(builder, "dialogRSA"));
 
   label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
   hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
@@ -150,10 +161,23 @@ int main(int argc, char *argv []){
   gtk_window_set_transient_for(GTK_WINDOW(dialogHash),GTK_WINDOW(window));
   gtk_window_set_attached_to(GTK_WINDOW(window),dialogHash);
 
-  gtk_window_set_transient_for(GTK_WINDOW(dialogRSAKey), GTK_WINDOW(window));
-  gtk_window_set_attached_to(GTK_WINDOW(window), dialogRSAKey);
+  gtk_window_set_transient_for(GTK_WINDOW(dialogRSA), GTK_WINDOW(window));
+  gtk_window_set_attached_to(GTK_WINDOW(window), dialogRSA);
 
   gtk_builder_connect_signals(builder, NULL);
+
+  mpz_init(p);
+  mpz_init(q);
+  mpz_init(n);
+  mpz_init(dp);
+  mpz_init(dq);
+  mpz_init(d);
+  mpz_init(ip);
+  mpz_init(k);
+  mpz_init(e);
+  mpz_init(c);
+  mpz_init(m);
+  mpz_init(sign);
 
   maFile = initialiser(); 
   maFile = Lecture();
@@ -286,7 +310,8 @@ void DialogRSA_cancel(GtkButton *button, GtkEntry *entry)
 	gtk_widget_destroy(dialogRSA);
 }
 
-void DialogRSA_send(GtkButton *button, GtkEntry *entry)
+/*
+void DialogRSA_send(GtkButton *button, GtkComboBox *widget)
 {
 	GtkComboBox *combo_box = widget;
 
@@ -311,10 +336,8 @@ void DialogRSA_send(GtkButton *button, GtkEntry *entry)
 		RSAKeyLen = 2048;
 	}
 
-	
-
 	gtk_widget_hide((GtkWidget *)dialogRSA);
-}
+}*/
 
 void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
   
@@ -945,54 +968,41 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
 	char *input;
-	mpz_t p;
-	mpz_t q;
-	mpz_t n;
-	mpz_t dp;
-	mpz_t dq;
-	mpz_t d;
-	mpz_t ip;
-	mpz_t k;
-	mpz_t e;
-	mpz_t c;
-	mpz_t m;
-	mpz_t sign;
-	mpz_init(p);
-	mpz_init(q);
-	mpz_init(n);
-	mpz_init(dp);
-	mpz_init(dq);
-	mpz_init(d);
-	mpz_init(ip);
-	mpz_init(k);
-	mpz_init(e);
-	mpz_init(c);
-	mpz_init(m);
-	mpz_init(sign);
-	mpz_set_ui(e, 65);
+
+	/* A CHANGER AVEC LE POP UP */
+	mpz_set_ui(k, 2048);
+	/* ************************** */
+	
+		mpz_set_ui(e, 11);
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
 	gtk_text_buffer_get_start_iter(buffer, &start);
 	gtk_text_buffer_get_end_iter(buffer, &end);
-
+	
 	if (strcmp(rsa, "Génération de clés RSA") == 0) {
 		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
 	}
 	if (strcmp(rsa, "Chiffrement RSA") == 0)
 	{
-		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+		RSA_Encrypt(c, m, e, n);
 	}
 	if (strcmp(rsa, "Déchiffrement RSA") == 0)
 	{
-		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+		RSA_Decrypt(m, c, d, n);
+	}
+	if (strcmp(rsa, "Déchiffrement RSA CRT") == 0)
+	{
+		//RSA_CRT_Decrypt(m, c, d, n);
 	}
 	if (strcmp(rsa, "Signature RSA") == 0)
 	{
-		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
-	}
+    mpz_set_str(m, "123456", 10);
+    RSA_Signature(sign, m, d, n);
+  }
 	if (strcmp(rsa, "Vérification") == 0)
 	{
-		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+		mpz_set_ui(n, 1234);
+		RSA_Verif(m, sign, e, n);
 	}
 }
 
