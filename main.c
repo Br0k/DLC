@@ -153,11 +153,7 @@ int main(int argc, char *argv []){
 
   return 0;}
 
-
-
 void import_path(GtkFileChooserButton *btn){
-
-
   file_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
   printf("%s\n",file_path );
   //gtk_file_chooser_unselect_all(GTK_FILE_CHOOSER(btn));
@@ -222,8 +218,7 @@ void Dialog_click_Annuler(GtkButton *button,GtkEntry *entry){
   free(key);
  }
 
-void Dialog_AES_CBC_click_Annuler(GtkButton *button,GtkEntry *entry)
-{
+void Dialog_AES_CBC_click_Annuler(GtkButton *button,GtkEntry *entry){
   const gchar *entry_text_IV;
   entry_text_IV = gtk_entry_get_text (GTK_ENTRY (Entry_AES_IV));
   gtk_entry_set_text(entry,"");
@@ -257,6 +252,7 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
   entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
   if(strlen(entry_text)!=(lenAES*2)+lenAES-1)
   {
+
     printErreur("Taille de clé incorrecte !");
   }
   else{
@@ -269,13 +265,14 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
       key[i]=tmp;
       printf("%02X ", (unsigned char) *(key+i));       
       entry_text = NULL;
-      
+    
     }
     gtk_entry_set_text(GTK_ENTRY (entry),"");
     gtk_entry_set_text(GTK_ENTRY (entry),"Entrer votre clé AES ...");
     gtk_widget_hide((GtkWidget*)dialog_AES);
   }
 }  
+
 
 void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
   const gchar *entry_text_key;
@@ -329,12 +326,12 @@ uint8_t ** InitTableau(int size){
   }
   return tab;}  
 
-unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,int * lenPaddedMsg,char * filename,GtkFileChooserButton *btn){
+unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,int * lenPaddedMsg,char * filename,GtkFileChooserButton *btn, int ChooseMode){
   int len, lenPaddedMessage;
   uint8_t **buf;
 
   FILE* file;
-  if(strcmp(mode,"rb")==0)
+  if(strcmp(mode,"rb")==0 && ChooseMode==0)
   {
    file = fopen(filename, mode);
 
@@ -357,12 +354,11 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
         for (int j = 0; j < 16; j++)
         {
           char tmp = fgetc(file);
-          printf("le tmp : %c\n",tmp);
+          //printf("le tmp : %c\n",tmp);
           if(tmp!='\n')
           {
 
             buf[i][j]=tmp;
-
           }else
           {
             buf[i][j]='\n';
@@ -383,7 +379,26 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
 
     }
   } 
-  if(strcmp(mode,"w")==0)
+
+  if(strcmp(mode,"rb")==0 && ChooseMode==1)
+  {
+   file = fopen(filename, mode);
+
+    if (file){
+      fseek (file, 0, SEEK_END);
+      len = ftell (file);
+
+      *lenPaddedMsg=len;
+      printf("Longueur test : %d\n", len);
+
+      fseek (file, 0, SEEK_SET);
+      buf = malloc (sizeof(char*) * len);
+
+      fgets(buf,len+1,file);
+    }
+  } 
+
+  if(strcmp(mode,"w")==0 && ChooseMode==0)
   {
     char * path = strtok ((char*)filename,".");
     strcat(path,".enc");
@@ -391,22 +406,45 @@ unsigned char **  TraitementFile(char* mode,unsigned char** chiffre,int lenght,i
     file = fopen(path, "w");
     if (file != NULL)
     { 
-         
+        
         for (int y = 0; y < lenght; y++)
           for (int i = 0; i < 16; i++)
-            fprintf(file,"%02X",(unsigned char) *(chiffre[y]+i) );
+            fprintf(file,"%02X ",(unsigned char) *(chiffre[y]+i) );
 
         //buf="";      
         printf("Mais la je plante surement\n");
     }
     gtk_file_chooser_set_filename (btn,path);
   }
+
+
+  if(strcmp(mode,"w")==0 && ChooseMode==1)
+  {
+    
+
+    char * path = strtok ((char*)filename,".");
+    strcat(path,".clair");
+    printf("%s\n",path );
+    file = fopen(path, "w");
+
+    if (file != NULL)
+    { 
+      for (int i = 0; i < lenght/16; i++)
+      {
+        for (int j = 0; j < 16; j++)
+        {
+          char tmp = chiffre[i][j];
+          fputc(tmp,file);
+        }
+      }
+    }
+    gtk_file_chooser_set_filename (btn,path);
+  }
+
   fclose (file);
   
   return buf;
 }
-
-
 
 GtkWidget * ReturnDialogAES(char * TypeAES){
   GtkWidget * AESDialog;
@@ -431,7 +469,7 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       printErreur("Selectionner un fichier !");
     else{
       int lenPaddedMessage;
-      uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename,btn);
+      uint8_t ** clair= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename,btn, 0);
       if(key==NULL)
       {
         GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
@@ -442,7 +480,7 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       {
         enc_msg = Main_AES(TypeAES,clair,key,lenPaddedMessage,IV);
         printf("je passe ici\n");
-        char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL,filename,btn);
+        char** bu = TraitementFile("w",enc_msg,lenPaddedMessage,NULL,filename,btn, 0);
         //TraitementFile("w",enc_msg,lenPaddedMessage,NULL,NULL);
       }
     }
@@ -452,6 +490,46 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
   free(IV);
   free(key); 
 }
+
+void Dechiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
+  char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
+  printf("%s et type %s\n",filename ,TypeAES);
+
+
+  if(TypeAES==NULL)
+    printErreur("Vous devez choisir votre AES !");
+  else{
+    if(filename==NULL)
+      printErreur("Selectionner un fichier !");
+    else{
+      int lenPaddedMessage;
+      uint8_t ** chiffre= TraitementFile("rb",NULL,0,&lenPaddedMessage,filename,btn, 1);
+      int lenChiffre = strlen(chiffre);
+
+      if(key==NULL)
+      {
+        GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
+        gtk_dialog_run(GTK_DIALOG(AESDialog));
+      }        
+      uint8_t **plaintext;
+      if(key!=NULL)
+      {
+        plaintext = InvMain_AES(TypeAES,chiffre,key,&lenChiffre,IV);
+
+        char** bu = TraitementFile("w",plaintext,lenChiffre,NULL,filename,btn, 1);
+        //TraitementFile("w",plaintext,lenPaddedMessage,NULL,NULL);
+      }
+    }
+  }
+  key=NULL;
+  IV=NULL;
+  free(IV);
+  free(key); 
+}
+
+
+
+
 
 char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,GtkTextView *text_label,int size){
   int decimal;
@@ -465,7 +543,6 @@ char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,Gt
   {
     decimal=msg[0][i];
     sprintf(tmp,"%02X",decimal);
-    g_print ("You chose %d\n ",msg[0][i]);
     char * msgEncrypt= strcat(tmp," ");
     strcat(result_history,tmp);
 
@@ -482,14 +559,12 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
   GtkTextIter start,end;
   char* message;
   char * history;
-
   //ON recupere le message dans la textBox si il est pas trop grand
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
   message=gtk_text_buffer_get_text(buffer,&start,&end,-1);
   history=malloc(sizeof(char*)*sizeof(message));
-  
 
   strcpy(history,message);
 
@@ -508,7 +583,6 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
         MsgToAES=malloc(sizeof(uint8_t*)*1);
         MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
    
-
         for (int i = 0; (cs = strtok ((char*)message," ")); i++)
         {
           int tmp = hexadecimalToDecimal(cs); 
@@ -546,7 +620,6 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
         }         
       }
     }
-    
     gtk_entry_set_text(Entry_AES_KEY," ");
     key=NULL;
     IV=NULL;
@@ -564,13 +637,13 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
   char* message;
   char * history;
 
+
   //ON recupere le message dans la textBox si il est pas trop grand
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
   gtk_text_buffer_get_start_iter(buffer, &start);
   gtk_text_buffer_get_end_iter(buffer, &end);
   message=gtk_text_buffer_get_text(buffer,&start,&end,-1);
   history=malloc(sizeof(char*)*sizeof(message));
-  
 
   strcpy(history,message);
 
@@ -584,33 +657,38 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
 
         printErreur("La longueur du bloc doit etre de 16 !");
       else{
-        //Fonction AES
-        uint8_t **MsgToAES; 
-        char * cs;
-        MsgToAES=malloc(sizeof(uint8_t*)*1);
-        MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
-   
 
-        for (int i = 0; (cs = strtok ((char*)message," ")); i++)
-        {
-          int tmp = hexadecimalToDecimal(cs); 
-          MsgToAES[0][i]=(uint8_t)tmp;
-          message = NULL; 
-        }
+        //Fonction AES
+        // uint8_t **MsgToAES; 
+        // char * cs;
+        // MsgToAES=malloc(sizeof(uint8_t*)*1);
+        // MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
+  
+        // for (int i = 0; (cs = strtok ((char*)message," ")); i++)
+        // {
+
+        //   int tmp = hexadecimalToDecimal(cs); 
+        //   MsgToAES[0][i]=(uint8_t)tmp;
+        //   message = NULL; 
+        // }
         if(key==NULL)   
         {
           GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
           //GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
           gtk_dialog_run(GTK_DIALOG(AESDialog)); 
         }
-        
-        for (int i = 0; i < 16; ++i)
-        {
-          printf("%02X ",(unsigned char) (MsgToAES[0][i]) );
-        }
+    
+        printf("\n");
+        // for (int i = 0; i < 16; ++i)
+        // {  
+        //   printf("%02X ",(unsigned char) (MsgToAES[0][i]) );
+        // }
+        // printf("\n");
+
         if (key != NULL)
         {
-          uint8_t ** msg = InvMain_AES(TypeAES,MsgToAES,key,1,IV);
+          int lenChiffre = 1;
+          uint8_t ** msg = InvMain_AES(TypeAES,message,key,&lenChiffre,IV);
           //char tmp[16];
           //int decimal;
           //Pour supprimer
@@ -1013,9 +1091,7 @@ void on_hash_file(GtkButton *button, GtkTextView *text_label){
       gtk_text_buffer_get_start_iter(buffer, &start);     
       gtk_text_buffer_get_end_iter(buffer, &end);
       gtk_text_buffer_insert(buffer,&end,hash,-1);
-
     }
-
 }
 
 void on_change_key(GtkButton *button, GtkEntry *entry)
