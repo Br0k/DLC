@@ -1053,8 +1053,9 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
 	char *input;
+  char *chiffre;
 
-	/* A CHANGER AVEC LE POP UP */
+  /* A CHANGER AVEC LE POP UP */
 	mpz_set_ui(k, 2048);
 	/* ************************** */
 	
@@ -1063,39 +1064,74 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
 	gtk_text_buffer_get_start_iter(buffer, &start);
 	gtk_text_buffer_get_end_iter(buffer, &end);
-
-  char *chiffre;
-
-  if (strcmp(rsa, "Génération de clés RSA") == 0) {
-		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	
+	if (strcmp(rsa, "Génération de clés RSA") == 0) {
+    RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
 	}
 	if (strcmp(rsa, "Chiffrement RSA") == 0)
 	{
-		RSA_Encrypt(c, m, e, n);
-	}
+    input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+    mpz_set_str(m, input, 10);
+    RSA_Encrypt(c, m, e, n);
+    gmp_printf("%Zd ", m);
+    chiffre = mpz_get_str(NULL, 10, c);
+    printf("%s", c);
+
+    gtk_text_buffer_delete(buffer, &start, &end);
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_insert(buffer, &end, chiffre, -1);
+  }
 	if (strcmp(rsa, "Déchiffrement RSA") == 0)
 	{
-		RSA_Decrypt(m, c, d, n);
-	}
+    input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+    mpz_set_str(c, input, 10);
+    RSA_Decrypt(m, c, d, n);
+
+    char *dechiffre = mpz_get_str(NULL, 10, m);
+
+    gtk_text_buffer_delete(buffer, &start, &end);
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_insert(buffer, &end, dechiffre, -1);
+  }
 	if (strcmp(rsa, "Déchiffrement RSA CRT") == 0)
 	{
-		//RSA_CRT_Decrypt(m, c, d, n);
-	}
+    input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+    mpz_set_str(c, input, 10);
+    RSA_CRT_Decrypt(m, c, p, q, dp, dq, ip);
+
+    char *dechiffre = mpz_get_str(NULL, 10, m);
+
+    gtk_text_buffer_delete(buffer, &start, &end);
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_insert(buffer, &end, dechiffre, -1);
+  }
 	if (strcmp(rsa, "Signature RSA") == 0)
 	{
-    mpz_set_str(m, "123456", 10);
+    input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+    mpz_set_str(m, input, 10);
     RSA_Signature(sign, m, d, n);
+
+    char *signe = mpz_get_str(NULL, 10, sign);
+
+    gtk_text_buffer_delete(buffer, &start, &end);
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_insert(buffer, &end, signe, -1);
   }
-	if (strcmp(rsa, "Vérification") == 0)
+	if (strcmp(rsa, "Vérification") == 0) 
 	{
-		mpz_set_ui(n, 1234);
-		RSA_Verif(m, sign, e, n);
-	}
+    input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+    mpz_set_str(sign, input, 10); 
+    RSA_Verif(m, sign, e, n);
+
+    char *verif = mpz_get_str(NULL, 10, m);
+    gtk_text_buffer_delete(buffer, &start, &end);
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    gtk_text_buffer_insert(buffer, &end, verif, -1);
+  }
 }
 
 	void on_click_hash(GtkButton *button, GtkTextView *text_label)
 {
-
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
 	char *input;
@@ -1104,6 +1140,12 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
 	gtk_text_buffer_get_start_iter(buffer, &start);
 	gtk_text_buffer_get_end_iter(buffer, &end);
+
+  if (hashAlgo==NULL){
+  	printErreur("Choisir un algo de hachage");
+  }
+
+  else{ 	
 
 	  if (strcmp(hashAlgo, "MD5") == 0){
 	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
@@ -1125,16 +1167,16 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	 
 	    if (strcmp(hashAlgo, "SHA2") == 0){ 
 
-	if (strcmp(algo_value, "SHA3") == 0)
-    {
 
-      input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
-      hash = sha3_keccak(input);
+	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
+	    hash = sha2_appel(input);  
 
-      gtk_text_buffer_delete(buffer, &start, &end);
-      buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-      gtk_text_buffer_insert(buffer, &end, hash, -1);
-    }
+	    gtk_text_buffer_delete(buffer,&start,&end); 
+	    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	    }
+
+	    if (strcmp(hashAlgo, "SHA3") == 0){ 
 
 	    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
 	    hash = sha3_keccak(input);  
