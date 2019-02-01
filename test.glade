@@ -290,13 +290,15 @@
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="active">0</property>
                     <items>
+                      <item translatable="yes">Génération de clés RSA</item>
                       <item translatable="yes">Chiffrement RSA</item>
                       <item translatable="yes">Dechiffrement RSA</item>
                       <item translatable="yes">Signature RSA</item>
                       <item translatable="yes">Vérification</item>
-                      <item translatable="yes">Génération de clés RSA</item>
                     </items>
+                    <signal name="changed" handler="rsaList" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -312,6 +314,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <signal name="clicked" handler="on_click_rsa" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -720,6 +723,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <signal name="clicked" handler="Decrypt_AES" object="Textbox" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -773,6 +777,7 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin_left">3</property>
+                    <signal name="clicked" handler="Dechiffrement_Fichier" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -788,6 +793,7 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin_left">3</property>
+                    <property name="active">0</property>
                     <items>
                       <item translatable="yes">AES 128</item>
                       <item translatable="yes">AES 192</item>
@@ -849,6 +855,7 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin_left">6</property>
+                    <property name="active">0</property>
                     <items>
                       <item translatable="yes">MD5</item>
                       <item translatable="yes">SHA1</item>
