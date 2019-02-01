@@ -56,6 +56,7 @@ static void destroy( GtkWidget *widget){
   g_object_unref(builder);
 } 
 
+// Gestion de l'historique avec le fichier fileHistorique.txt
 void Historique(char* op1,char* op2,char* type,char* type2){
 
   int taille =SizeFile(maFile);
@@ -78,6 +79,7 @@ void Historique(char* op1,char* op2,char* type,char* type2){
   afficherFile(maFile,label);
 }          
 
+// Fonction de conversion HEX<->DEC
 int hexadecimalToDecimal(char hexVal[]) {
     int len = strlen(hexVal); 
       
@@ -150,15 +152,16 @@ int main(int argc, char *argv []){
   return 0;}
 
 
-
+// Récupération du chemin complet du fichier importé
 void import_path(GtkFileChooserButton *btn){
 
 
   file_path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
-  printf("%s\n",file_path );
+  //printf("%s\n",file_path );
   //gtk_file_chooser_unselect_all(GTK_FILE_CHOOSER(btn));
 }
 
+// Récupération de l'algorithme de hachage choisi
 void hashList(GtkComboBox *widget){
   GtkComboBox *combo_box = widget;
 
@@ -167,12 +170,12 @@ void hashList(GtkComboBox *widget){
   
   if (index != -1) {
     hashAlgo= gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo_box));
-    //int i = gtk_combo_box_get_active(combo_box);
-   g_print ("Choix : %s\n", hashAlgo);
+   //g_print ("Choix : %s\n", hashAlgo);
    
   }  
 }
 
+// Fonction de lecture du fichier importé
 char* readFile(char* filename){
 
   char *buffer = NULL;
@@ -195,11 +198,10 @@ char* readFile(char* filename){
      }
      fclose(handler);
   }
-  printf("%s\n",buffer );
-
   return buffer;
 }
 
+// Affichage d'une pop-up en cas d'erreur
 void printErreur(char *msg){ 
   GtkWidget*  dialog;
   dialog = gtk_message_dialog_new (GTK_WINDOW(window) ,
@@ -235,6 +237,7 @@ void DialogHash_cancel(GtkButton *button,GtkEntry *entry){
   gtk_entry_set_text(entry,"Entrer une clé : ");
   gtk_widget_destroy(dialogHash);}
 
+// Récupération de la clé à utiliser pour HMAC-SHA1
 void DialogHash_send(GtkButton *button,GtkEntry *entry){
   const gchar *entry_text;
 
@@ -247,6 +250,7 @@ void DialogHash_send(GtkButton *button,GtkEntry *entry){
   gtk_widget_hide((GtkWidget*)dialogHash);
 }
 
+// Récupération de la clé pour AES
 void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
   
   const gchar *entry_text;
@@ -272,6 +276,8 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
     gtk_widget_hide((GtkWidget*)dialog_AES);
   }
 }  
+
+// Récupération de la clé pour AES-CBC
 
 void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
   const gchar *entry_text_key;
@@ -412,6 +418,7 @@ GtkWidget * ReturnDialogAES(char * TypeAES){
   }
   return AESDialog;}  
 
+// Chiffrement de fichier avec AES
 void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
   char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(btn));
   printf("%s et type %s\n",filename ,TypeAES);
@@ -466,6 +473,7 @@ char * Afficher_AES_Label(GtkTextBuffer *buffer,GtkTextIter end,uint8_t** msg,Gt
 
 }
 
+// Fonction de chiffrement AES
 void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
 
@@ -547,7 +555,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label)
 }
 
 
-
+// Fonction de déchiffrement AES
 void Decrypt_AES(GtkButton *button,GtkTextView *text_label)
 {
   GtkTextBuffer *buffer;
@@ -741,7 +749,7 @@ void Convertisseur(GtkToggleButton *button,GtkTextView *text_label){
 }
 
 
-
+// Fonction de génération d'une clé AES
 void generateAESKey(GtkButton *button,GtkTextView *text_label){
   if(TypeAES==NULL)
     printErreur("Vous devez choisir votre AES !");
@@ -776,6 +784,7 @@ void generateAESKey(GtkButton *button,GtkTextView *text_label){
 
   }}
 
+// Gestion des entrées/sorties du pavé numérique
 void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label){
    
   GtkTextBuffer *buffer;
@@ -871,7 +880,8 @@ void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label){
     }
 
   }}      
-        
+
+// Fonctions de hachage d'une chaîne en fonction de l'algo choisi       
 void on_click_hash(GtkButton *button, GtkTextView *text_label){
 
   GtkTextBuffer * buffer;
@@ -948,6 +958,7 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
 	}
 }
 
+// Fonctions de hachage d'un fichier en fonction de l'algo choisi 
 void on_hash_file(GtkButton *button, GtkTextView *text_label){
 
   GtkTextBuffer * buffer;
