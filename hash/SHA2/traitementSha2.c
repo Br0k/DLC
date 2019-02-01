@@ -102,7 +102,7 @@ char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	//int taille_bloc = 64; // taille d'un bloc 64 * 8 = 512
 	//chaineAtraiter ="";
 	mpz_init(donnee);
-	printf("%d\n", tailleAallouer(taille));
+	//printf("%d\n", tailleAallouer(taille));
 	//exit(0);
 	chaineAtraiter = malloc(tailleAallouer(taille) * sizeof(char)); 
 	nettoyer(chaineAtraiter,tailleAallouer(taille));
