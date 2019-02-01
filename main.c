@@ -13,6 +13,9 @@
 #include "AES/AES_encrypt.c"
 #include "AES/AES_decrypt.c"
 
+//RSA
+#include "RSA/RSA_CRT.c"
+
 //includes de base
 #include <ctype.h>
 #include <gmp.h>
@@ -26,8 +29,11 @@ gchar * Combobox2;
 gchar * algo_value;
 gchar * TypeAES;
 gchar *hmacKey;
+gchar *rsa;
+gchar *rsaValue;
 char* file_path;
 int lenAES;
+mpz_t a;
 
 unsigned char* key;
 unsigned char *keyHex;
@@ -125,7 +131,8 @@ int main(int argc, char *argv []){
   dialog_AES = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES"));
   dialog_AES_CBC = GTK_WIDGET(gtk_builder_get_object(builder, "DialogAES_CBC"));
   dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
-  
+  dialogRSAKey = GTK_WIDGET(gtk_builder_get_object(builder, "dialogRSAKey"));
+
   label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
   hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
   eye_image = GTK_WIDGET(gtk_builder_get_object(builder,"eye"));
@@ -139,6 +146,9 @@ int main(int argc, char *argv []){
 
   gtk_window_set_transient_for(GTK_WINDOW(dialogHash),GTK_WINDOW(window));
   gtk_window_set_attached_to(GTK_WINDOW(window),dialogHash);
+
+  gtk_window_set_transient_for(GTK_WINDOW(dialogRSAKey), GTK_WINDOW(window));
+  gtk_window_set_attached_to(GTK_WINDOW(window), dialogRSAKey);
 
   gtk_builder_connect_signals(builder, NULL);
 
@@ -176,6 +186,20 @@ void hashList(GtkComboBox *widget){
    g_print ("Choix : %s\n", algo);
    
   }  
+}
+
+void rsaList(GtkComboBox *widget)
+{
+  GtkComboBox *combo_box = widget;
+
+  gint index = -1;
+  index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+
+  if (index != -1)
+  {
+    rsa = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
+    g_print("Choix RSA : %s\n", rsa);
+  }
 }
 
 char* readFile(char* filename){
@@ -881,26 +905,83 @@ void on_btn_0_clicked(GtkButton *button, GtkTextView *text_label){
       break;
     }
 
-  }}      
-        
-void on_click_hash(GtkButton *button, GtkTextView *text_label){
+  }}
 
-  GtkTextBuffer * buffer;
-  GtkTextIter start,end; 
-  char *input;
-  char* hash;
+void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
+	GtkTextBuffer *buffer;
+	GtkTextIter start, end;
+	char *input;
+	mpz_t p;
+	mpz_t q;
+	mpz_t n;
+	mpz_t dp;
+	mpz_t dq;
+	mpz_t d;
+	mpz_t ip;
+	mpz_t k;
+	mpz_t e;
+	mpz_t c;
+	mpz_t m;
+	mpz_t sign;
+	mpz_init(p);
+	mpz_init(q);
+	mpz_init(n);
+	mpz_init(dp);
+	mpz_init(dq);
+	mpz_init(d);
+	mpz_init(ip);
+	mpz_init(k);
+	mpz_init(e);
+	mpz_init(c);
+	mpz_init(m);
+	mpz_init(sign);
+	mpz_set_ui(e, 65);
 
-  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-  gtk_text_buffer_get_start_iter(buffer, &start);
-  gtk_text_buffer_get_end_iter(buffer, &end);
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	gtk_text_buffer_get_start_iter(buffer, &start);
+	gtk_text_buffer_get_end_iter(buffer, &end);
 
-  if (strcmp(algo_value, "MD5") == 0){
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = md5digest(input);
+	if (strcmp(rsa, "Génération de clés RSA") == 0) {
+		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	}
+	if (strcmp(rsa, "Chiffrement RSA") == 0)
+	{
+		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	}
+	if (strcmp(rsa, "Déchiffrement RSA") == 0)
+	{
+		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	}
+	if (strcmp(rsa, "Signature RSA") == 0)
+	{
+		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	}
+	if (strcmp(rsa, "Vérification") == 0)
+	{
+		RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
+	}
+}
 
-    gtk_text_buffer_delete(buffer,&start,&end);
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
+	void on_click_hash(GtkButton *button, GtkTextView *text_label)
+{
+
+	GtkTextBuffer *buffer;
+	GtkTextIter start, end;
+	char *input;
+	char *hash;
+
+	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+	gtk_text_buffer_get_start_iter(buffer, &start);
+	gtk_text_buffer_get_end_iter(buffer, &end);
+
+	if (strcmp(algo_value, "MD5") == 0)
+	{
+		input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+		hash = md5digest(input);
+
+		gtk_text_buffer_delete(buffer, &start, &end);
+		buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+		gtk_text_buffer_insert(buffer, &end, hash, -1);
     }
 
   if (strcmp(algo_value, "SHA1") == 0){
@@ -922,14 +1003,15 @@ void on_click_hash(GtkButton *button, GtkTextView *text_label){
     gtk_text_buffer_insert(buffer,&end,hash,-1);
     }
 
-    if (strcmp(algo_value, "SHA3") == 0){ 
+	if (strcmp(algo_value, "SHA3") == 0)
+    {
 
-    input = gtk_text_buffer_get_text(buffer,&start,&end,-1);
-    hash = sha3_keccak(input);  
+      input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+      hash = sha3_keccak(input);
 
-    gtk_text_buffer_delete(buffer,&start,&end); 
-    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer,&end,hash,-1);
+      gtk_text_buffer_delete(buffer, &start, &end);
+      buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+      gtk_text_buffer_insert(buffer, &end, hash, -1);
     }
 
   if (strcmp(algo_value, "HMAC-SHA1") == 0){
