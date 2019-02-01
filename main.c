@@ -1,10 +1,9 @@
-//fonction SHA2
-#include "hash/sha2.c"
-#include "hash/fonctionSha2.c"
-#include "hash/traitementSha2.c"
+//fonctions de hachage
 #include "hash/hashlib.c"
-#include "hash/SHA3IUF/sha3test.c"
-#include "hash/SHA3IUF/sha3.c"
+#include "hash/SHA2/sha2.c"
+#include "hash/SHA2/fonctionSha2.c"
+#include "hash/SHA2/traitementSha2.c"
+#include "hash/SHA3/sha3.c"
 
 //historique
 #include "historique/main_historique.c"
