@@ -156,6 +156,9 @@
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can_focus">False</property>
@@ -358,7 +361,6 @@
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="active">0</property>
                     <items>
                       <item translatable="yes">Génération de clés RSA</item>
                       <item translatable="yes">Chiffrement RSA</item>
@@ -861,7 +863,6 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin_left">3</property>
-                    <property name="active">0</property>
                     <items>
                       <item translatable="yes">AES 128</item>
                       <item translatable="yes">AES 192</item>
@@ -923,7 +924,6 @@
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="margin_left">6</property>
-                    <property name="active">0</property>
                     <items>
                       <item translatable="yes">MD5</item>
                       <item translatable="yes">SHA1</item>
