@@ -15,7 +15,7 @@
 void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip) {
 
 	printf("DEDANS!");
-	FILE *f = fopen("privateKey.txt", "w");
+	FILE *f = fopen("RSA/privateKey.txt", "w");
 	if (f == NULL)
 	{
 		printf("Error opening file!\n");
@@ -27,7 +27,7 @@ void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip
 	fprintf(f, "d: ");
 	mpz_out_str(f, 10, d );
 	fprintf(f, "\n");
-	fprintf(f, "dp ");
+	fprintf(f, "p ");
 	mpz_out_str(f, 10, p);
 	fprintf(f, "\n");
 	fprintf(f, "q: ");
@@ -65,6 +65,7 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	char *strE = mpz_get_str(NULL, 10, e);
 
 	int size = 9 + strlen(strN) + 2 + strlen(strE);
+	printf("%d ", size);
 	unsigned char *key;
 
 	key = malloc (sizeof(int) * size);
@@ -115,13 +116,12 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 
 	size_t *output;
 	//A MODIFIER
-	char *b64text = base64_encode(key, 632, &output);
+	char *b64text = base64_encode(key, size, &output);
 	
 	//Base64Encode(key, size, &b64text);
 	//printf("%ld ", strlen(key));
 
-
-	FILE *f = fopen("publicKey.txt", "w");
+	FILE *f = fopen("RSA/publicKey.txt", "w");
 	if (f == NULL)
 	{
 		printf("Error opening file!\n");
@@ -243,19 +243,15 @@ void RSA_CRT_Decrypt(mpz_t m, mpz_t c, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz
 
 	mpz_powm(mp, c, dp, p);
 	mpz_powm(mq, c, dq, q);
-	gmp_printf("mp = %Zd \n", mp);
-	gmp_printf("mq = %Zd \n", mq);
 	mpz_sub(rop, mq, mp);
 	mpz_mul(rop, rop, ip);
 	mpz_mod(rop, rop, q);
 	mpz_mul(rop, rop, p);
 	mpz_add(m, rop, mp);
-	gmp_printf("Déchiffré = %Zd \n", m);
 }
 
 void RSA_Signature(mpz_t sign, mpz_t m, mpz_t d, mpz_t n) {
 	mpz_powm(sign, m, d, n);
-	gmp_printf("Sign = %Zd \n", sign);
 }
 
 void RSA_Verif(mpz_t m, mpz_t sign, mpz_t e, mpz_t n) {
@@ -270,7 +266,7 @@ void RSA_Verif(mpz_t m, mpz_t sign, mpz_t e, mpz_t n) {
 	}
 }
 
-
+/*
 int main(int argc, char *argv[]) {
 	mpz_t p;
 	mpz_t q;
@@ -306,5 +302,6 @@ int main(int argc, char *argv[]) {
 	RSA_CRT_Decrypt(m, c, p, q, dp, dq, ip);
 	RSA_Signature(sign, m, d, n);
 	RSA_Verif(m, sign, e, n);
-	return 0;*/
+	return 0;
 }
+*/
