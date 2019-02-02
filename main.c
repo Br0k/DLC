@@ -254,7 +254,6 @@ void rsaList(GtkComboBox *widget) {
   if (index != -1)
   {
     rsa = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
-    g_print("Choix RSA : %s\n", rsa);
   }
 }
 
@@ -267,7 +266,6 @@ void rsaLenList(GtkComboBox *widget) {
   if (index != -1)
   {
     RSAKeyLenChoice = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
-    g_print("Choix RSA : %s\n", RSAKeyLenChoice);
   }
 }
 
@@ -429,17 +427,14 @@ void DialogRSAK_send(GtkButton *button, GtkComboBox *widget){
 
 	if (strcmp(RSAKeyLenChoice, "512 bits") == 0) {
 		RSAKeyLen = 512;
-		printf("%d\n", RSAKeyLen);
 	}
 
 	if (strcmp(RSAKeyLenChoice, "1024 bits") == 0) {
 		RSAKeyLen = 1024;
-		printf("%d\n", RSAKeyLen);
 	}
 
 	if (strcmp(RSAKeyLenChoice, "2048 bits") == 0) {
 		RSAKeyLen = 2048;
-		printf("%d\n", RSAKeyLen);
 	}
 
 	gtk_widget_hide((GtkWidget *)dialogRSAK);
@@ -1137,7 +1132,6 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 
 		gtk_dialog_run(GTK_DIALOG (dialogRSAK));
 		mpz_set_ui(k, RSAKeyLen);
-    	gmp_printf("%Zd", k);
     	RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
 	}
 	if (strcmp(rsa, "Chiffrement RSA") == 0)
