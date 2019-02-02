@@ -309,7 +309,8 @@ void DialogRSAP_cancel(GtkButton *button,GtkEntry *entry){
 
   gtk_entry_set_text(entry,"");
   gtk_entry_set_text(entry,"Entrer une clé RSA : ");
-  gtk_widget_destroy(dialogRSAP);}
+  gtk_widget_destroy(dialogRSAP);
+  }
 
 void DialogRSAP_send(GtkButton *button,GtkEntry *entry){
   const gchar *entry_text;
@@ -1042,7 +1043,7 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	mpz_set_ui(k, 2048);
 	/* ************************** */
 	
-		mpz_set_ui(e, 11);
+	mpz_set_ui(e, 11);
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
 	gtk_text_buffer_get_start_iter(buffer, &start);
@@ -1064,11 +1065,9 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
     printf("%s ", head);*/
     gtk_text_buffer_insert(buffer, &end, key, -1);
   }
-	if (strcmp(rsa, "Chiffrement RSA") == 0)
-	{
+	if (strcmp(rsa, "Chiffrement RSA") == 0) {
     input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
-    int valeur = 0;
-
+    /*int valeur = 0;
     char buf[strlen(input)];
     char *finalInput = malloc(sizeof(char) * strlen(buf));
     for (int i = 0; i < strlen(input); i++)
@@ -1078,11 +1077,19 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
     for (int i = 0; i < strlen(input); i++) {
       int j = (int) input[i];
       valeur = sprintf(buf, "%d", j);
+      //printf("%d", j);
+      if(j < 100) {
+        if (j < 10) {
+          strcat(finalInput, "9");
+        }
+        strcat(finalInput, "9");
+      }
       strcat(finalInput, buf);
-    }
-
-    mpz_set_str(m, finalInput, 10);
-
+      
+      }
+      printf("%s ", finalInput);
+      mpz_set_str(m, finalInput, 10);*/
+    mpz_set_str(m, input, 10);
     RSA_Encrypt(c, m, e, n);
     chiffre = mpz_get_str(NULL, 10, c);
 
@@ -1091,21 +1098,44 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
     gtk_text_buffer_insert(buffer, &end, chiffre, -1);
   }
 
-	if (strcmp(rsa, "Déchiffrement RSA") == 0)
-	{
-
-	gtk_dialog_run(GTK_DIALOG (dialogRSAP));
-	printf("%s\n", RSAPriv);
-  input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
-
+	if (strcmp(rsa, "Déchiffrement RSA") == 0) {
+    gtk_dialog_run(GTK_DIALOG (dialogRSAP));
+    input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
+    mpz_set_str(c, input, 10);
     RSA_Decrypt(m, c, d, n);
     char *dechiffre = mpz_get_str(NULL, 10, m);
-    printf("%s ", dechiffre);
-    
+    //printf("%s ", dechiffre);
+    /*
+    char *final;
+    for (int i = 0; i < strlen(dechiffre); i++) {
+      if (dechiffre[i] == '9' ) {
+        if (i < strlen(dechiffre)) {
+          if (dechiffre[i+1] == '9'){
+            strcat(final, dechiffre[i+2]);
+            exit(0);
+        } 
+        else {
+          strcat(final, dechiffre[i + 1]);
+          strcat(final, dechiffre[i + 2]);
+        }
+      }
+      else {
+        strcat(final, dechiffre[i]);
+      }
+    }
+    else {
+      strcat(final, dechiffre[i]);
+      strcat(final, dechiffre[i + 1]);
+      strcat(final, dechiffre[i + 2]);
+    }
+}
+    exit(0);*/
+
     gtk_text_buffer_delete(buffer, &start, &end);
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer, &end, dechiffre, -1); 
+    gtk_text_buffer_insert(buffer, &end, dechiffre, -1);
   }
+
 
 	if (strcmp(rsa, "Déchiffrement RSA CRT") == 0)
 	{

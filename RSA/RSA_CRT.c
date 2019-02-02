@@ -9,6 +9,37 @@
 #include <stdint.h>
 #include"Base64Encode.c"
 
+void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip )
+{
+	printf("DEDANS!");
+	FILE *f = fopen("privateKey.txt", "w");
+	if (f == NULL)
+	{
+		printf("Error opening file!\n");
+		exit(1);
+	}
+
+	/* print some text */
+	fprintf(f, "Private key: %s\n", text);
+
+	/* print integers and floats */
+	int d = mpz_get_ui(d);
+	int p = mpz_get_ui(p);
+	int q = mpz_get_ui(q);
+	int dp = mpz_get_ui(ddp;
+	int dq = mpz_get_ui(dq);
+	int ip = mpz_get_ui(ip);
+	float py = 3.1415927;
+	fprintf(f, "d : %d\n", d);
+	fprintf(f, "p : %d\n", p);
+	fprintf(f, "q : %d\n", q);
+	fprintf(f, "dp : %d\n", dp);
+	fprintf(f, "dq : %d\n", dq);
+	fprintf(f, "ip : %d\n", ip);
+
+	fclose(f);
+}
+
 void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	mpz_t hex;
 	mpz_t mpzHeader;
@@ -75,11 +106,6 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 		//printf("%d ", footSize + i);
 	}
 	
-	
-	for (int i = 0; i < size; i++) {
-		//printf("%d ", key[i]);
-		//printf("-> %d \n", i);
-	}
 	key[size] = '\0';
 
 	size_t *output;
@@ -90,7 +116,6 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	printf("-----BEGIN RSA PUBLIC KEY-----\n");
 	printf("%s\n", b64text);
 	printf("-----END RSA PUBLIC KEY-----\n");
-	//free(key);
 }
 
 void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e, mpz_t d) {
@@ -169,7 +194,7 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_invert(ip, p, q);
 
 	formatRsaPublicKey(n, e);
-	
+	formatRsaPrivateKey(d, p, q, dp, dq, ip);
 }
 
 void RSA_Encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
