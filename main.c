@@ -427,16 +427,19 @@ void DialogRSAK_cancel(GtkButton *button, GtkEntry *entry){
 void DialogRSAK_send(GtkButton *button, GtkComboBox *widget){
 	GtkComboBox *combo_box = widget;
 
-	if (strcmp(RSAKeyLenChoice, "512 bits")) {
+	if (strcmp(RSAKeyLenChoice, "512 bits") == 0) {
 		RSAKeyLen = 512;
+		printf("%d\n", RSAKeyLen);
 	}
 
-	if (strcmp(RSAKeyLenChoice, "1024 bits")) {
+	if (strcmp(RSAKeyLenChoice, "1024 bits") == 0) {
 		RSAKeyLen = 1024;
+		printf("%d\n", RSAKeyLen);
 	}
 
-	if (strcmp(RSAKeyLenChoice, "2048 bits")){
+	if (strcmp(RSAKeyLenChoice, "2048 bits") == 0) {
 		RSAKeyLen = 2048;
+		printf("%d\n", RSAKeyLen);
 	}
 
 	gtk_widget_hide((GtkWidget *)dialogRSAK);
@@ -1122,13 +1125,9 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
 	char *input;
-  char *chiffre;
+  	char *chiffre;
 
-  /* A CHANGER AVEC LE POP UP */
-	mpz_set_ui(k, 2048);
-	/* ************************** */
-	
-		mpz_set_ui(e, 11);
+	mpz_set_ui(e, 11);
 
 	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
 	gtk_text_buffer_get_start_iter(buffer, &start);
@@ -1137,6 +1136,8 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	if (strcmp(rsa, "Génération de clés RSA") == 0) {
 
 		gtk_dialog_run(GTK_DIALOG (dialogRSAK));
+		mpz_set_ui(k, RSAKeyLen);
+    	gmp_printf("%Zd", k);
     	RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
 	}
 	if (strcmp(rsa, "Chiffrement RSA") == 0)
