@@ -1,4 +1,4 @@
-#include "tete.h"
+#include "header.h"
 
 
 void initialiserK_valeurConstante(mpz_t k_values[64]){
@@ -40,6 +40,7 @@ char * paddingChaine(char * chaine, int nombreDeBitsArespecter){
 	for (int i = 0 ; i < strlen(chaine); i++ )
 		sprintf( resultat + i + decallage,"%c",chaine[i]);
 	return resultat;
+	free(resultat);
 }
 void nettoyer(char * chaine,int taille){
 	for (int i = 0; i < taille; i++)
@@ -54,6 +55,7 @@ void recuppererBlockPartie(char *block, int position, mpz_t data){
 	for (int i = debut; i < debut+32; i++ )
 		sprintf(chaine,"%s%c",chaine,block[i]);
 	mpz_set_str(data,chaine,2);
+	free(chaine);
 }
 
 
@@ -100,7 +102,7 @@ char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	//int taille_bloc = 64; // taille d'un bloc 64 * 8 = 512
 	//chaineAtraiter ="";
 	mpz_init(donnee);
-	printf("%d\n", tailleAallouer(taille));
+	//printf("%d\n", tailleAallouer(taille));
 	//exit(0);
 	chaineAtraiter = malloc(tailleAallouer(taille) * sizeof(char)); 
 	nettoyer(chaineAtraiter,tailleAallouer(taille));
@@ -144,4 +146,6 @@ char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	
 	return chaineAtraiter;
 
+	free(chaineAtraiter);
+	free(elt);
 }
