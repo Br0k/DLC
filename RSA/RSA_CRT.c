@@ -1,5 +1,8 @@
 //gcc -o RSA_CRT RSA_CRT.c -lgmp -lcrypto && ./RSA_CRT
 
+#define TRUE 1
+#define FALSE 0
+
 #include <stdio.h>
 #include<string.h>
 #include "gmp.h"
@@ -9,8 +12,8 @@
 #include <stdint.h>
 #include"Base64Encode.c"
 
-void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip )
-{
+void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip) {
+
 	printf("DEDANS!");
 	FILE *f = fopen("privateKey.txt", "w");
 	if (f == NULL)
@@ -19,23 +22,25 @@ void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip
 		exit(1);
 	}
 
-	/* print some text */
-	fprintf(f, "Private key: %s\n", text);
+	fprintf(f, "Private key: \n");
 
-	/* print integers and floats */
-	int d = mpz_get_ui(d);
-	int p = mpz_get_ui(p);
-	int q = mpz_get_ui(q);
-	int dp = mpz_get_ui(ddp;
-	int dq = mpz_get_ui(dq);
-	int ip = mpz_get_ui(ip);
-	float py = 3.1415927;
-	fprintf(f, "d : %d\n", d);
-	fprintf(f, "p : %d\n", p);
-	fprintf(f, "q : %d\n", q);
-	fprintf(f, "dp : %d\n", dp);
-	fprintf(f, "dq : %d\n", dq);
-	fprintf(f, "ip : %d\n", ip);
+	fprintf(f, "d: ");
+	mpz_out_str(f, 10, d );
+	fprintf(f, "\n");
+	fprintf(f, "dp ");
+	mpz_out_str(f, 10, p);
+	fprintf(f, "\n");
+	fprintf(f, "q: ");
+	mpz_out_str(f, 10, q);
+	fprintf(f, "\n");
+	fprintf(f, "dp: ");
+	mpz_out_str(f, 10, dp);
+	fprintf(f, "\n");
+	fprintf(f, "dq: ");
+	mpz_out_str(f, 10, dq);
+	fprintf(f, "\n");
+	fprintf(f, "ip: ");
+	mpz_out_str(f, 10, ip);
 
 	fclose(f);
 }
@@ -109,13 +114,34 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	key[size] = '\0';
 
 	size_t *output;
+	//A MODIFIER
 	char *b64text = base64_encode(key, 632, &output);
 	
 	//Base64Encode(key, size, &b64text);
 	//printf("%ld ", strlen(key));
-	printf("-----BEGIN RSA PUBLIC KEY-----\n");
-	printf("%s\n", b64text);
-	printf("-----END RSA PUBLIC KEY-----\n");
+
+
+	FILE *f = fopen("publicKey.txt", "w");
+	if (f == NULL)
+	{
+		printf("Error opening file!\n");
+		exit(1);
+	}
+
+	fprintf(f, "Public key: \n");
+	fprintf(f, "-----BEGIN RSA PUBLIC KEY-----\n");
+	for (int i = 0; i < strlen(b64text); i++) {
+		int tmp = strlen(b64text) / 4;
+		int tmp2 = strlen(b64text) / 2;
+		int tmp3 = (strlen(b64text) / 4 * 3);
+		if (i == tmp || i == tmp2 || i == tmp3) {
+			fprintf(f, "\n");
+		}
+		fprintf(f, "%c", b64text[i]);
+	}
+	fprintf(f, "\n-----END RSA PUBLIC KEY-----\n");
+
+	fclose(f);
 }
 
 void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e, mpz_t d) {
@@ -244,7 +270,7 @@ void RSA_Verif(mpz_t m, mpz_t sign, mpz_t e, mpz_t n) {
 	}
 }
 
-/*
+
 int main(int argc, char *argv[]) {
 	mpz_t p;
 	mpz_t q;
@@ -280,5 +306,5 @@ int main(int argc, char *argv[]) {
 	RSA_CRT_Decrypt(m, c, p, q, dp, dq, ip);
 	RSA_Signature(sign, m, d, n);
 	RSA_Verif(m, sign, e, n);
-	return 0;
-}*/
+	return 0;*/
+}
