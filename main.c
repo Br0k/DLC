@@ -26,6 +26,7 @@ gchar * AES;
 gchar * TypeAES;
 gchar *hmacKey;
 gchar *RSAPriv;
+gchar *RSASign;
 gchar *rsa;
 gchar *rsaValue;
 char* file_path;
@@ -55,6 +56,7 @@ GtkWidget *dialog_AES_CBC;
 GtkWidget *dialogRSA;
 GtkWidget *dialogHash;
 GtkWidget *dialogRSAP;
+GtkWidget *dialogRSAS;
 GtkWidget *hide_image;
 GtkWidget *eye_image;
 
@@ -147,6 +149,7 @@ int main(int argc, char *argv []){
   dialogHash = GTK_WIDGET(gtk_builder_get_object(builder, "DialogHash"));
   dialogRSA = GTK_WIDGET(gtk_builder_get_object(builder, "dialogRSA"));
   dialogRSAP = GTK_WIDGET(gtk_builder_get_object(builder, "DialogRSAP"));
+  dialogRSAS = GTK_WIDGET(gtk_builder_get_object(builder, "DialogRSAS"));
 
   label = GTK_WIDGET(gtk_builder_get_object(builder,"old_calcul"));
   hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
@@ -167,6 +170,9 @@ int main(int argc, char *argv []){
 
   gtk_window_set_transient_for(GTK_WINDOW(dialogRSAP),GTK_WINDOW(window));
   gtk_window_set_attached_to(GTK_WINDOW(window),dialogRSAP);
+
+  gtk_window_set_transient_for(GTK_WINDOW(dialogRSAS),GTK_WINDOW(window));
+  gtk_window_set_attached_to(GTK_WINDOW(window),dialogRSAS);
 
   gtk_builder_connect_signals(builder, NULL);
 
@@ -318,6 +324,23 @@ void DialogRSAP_send(GtkButton *button,GtkEntry *entry){
   gtk_entry_set_text(GTK_ENTRY (entry),"");
   gtk_entry_set_text(GTK_ENTRY (entry),"Entrer une clé RSA : ");
   gtk_widget_hide((GtkWidget*)dialogRSAP);
+}
+
+void DialogRSAS_cancel(GtkButton *button,GtkEntry *entry){
+
+  gtk_entry_set_text(entry,"");
+  gtk_entry_set_text(entry,"Entrer une clé RSA : ");
+  gtk_widget_destroy(dialogRSAS);}
+
+void DialogRSAS_send(GtkButton *button,GtkEntry *entry){
+  const gchar *entry_text;
+
+  entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
+  RSASign=malloc(sizeof(char *) * strlen(entry_text));
+  strcpy(RSASign,entry_text);
+  gtk_entry_set_text(GTK_ENTRY (entry),"");
+  gtk_entry_set_text(GTK_ENTRY (entry),"Entrer une clé RSA : ");
+  gtk_widget_hide((GtkWidget*)dialogRSAS);
 }
 
 void DialogRSA_cancel(GtkButton *button, GtkEntry *entry){
@@ -1092,6 +1115,10 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
   }
 	if (strcmp(rsa, "Signature RSA") == 0)
 	{
+
+	gtk_dialog_run(GTK_DIALOG (dialogRSAS));
+	printf("%s\n", RSASign);
+
     input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
     mpz_set_str(m, input, 10);
     RSA_Signature(sign, m, d, n);
