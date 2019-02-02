@@ -720,7 +720,7 @@ void Chiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       }
     }
   }
-
+ 
 }
 
 // Déchiffrement de fichier avec AES
@@ -739,22 +739,20 @@ void Dechiffrement_Fichier(GtkButton *button,GtkFileChooserButton *btn){
       uint8_t ** chiffre=TraitementFile("rb",NULL,0,&lenPaddedMessage,filename,btn, 1);
       int lenChiffre = strlen(chiffre);
 
-      if(key==NULL)
-      {
         gtk_entry_set_text(GTK_ENTRY(Entry_AES),keyHex);
         GtkWidget * AESDialog = ReturnDialogAES(TypeAES);
         gtk_dialog_run(GTK_DIALOG(AESDialog));
-      }        
+
       uint8_t **plaintext;
       if(bool_retour_dialog_annuler==0)
       {
-        plaintext = InvMain_AES(TypeAES,chiffre,key,&lenChiffre,IV);
+        plaintext = InvMain_AES(TypeAES,chiffre,key,&lenChiffre,IV,1);
 
         char** bu =TraitementFile("w",plaintext,lenChiffre,NULL,filename,btn, 1);
         //TraitementFile("w",plaintext,lenPaddedMessage,NULL,NULL);
         bool_retour_dialog_annuler=1;
       }
-    }
+    } 
   }
 
 
@@ -833,7 +831,7 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label){
         }
         if (bool_retour_dialog_annuler==0)
         {
-          uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,1,IV);
+          uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,1,IV); 
           //char tmp[16];
           //int decimal;
           //Pour supprimer
@@ -841,8 +839,9 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label){
           gtk_text_buffer_get_end_iter(buffer,&end);
           gtk_text_buffer_delete(buffer,&start,&end);
           //Pour ajouter
+                    printf("sizeof %d et strlen: %d\n",sizeof(msg),strlen(msg) );
 
-          char *result_history=Afficher_AES_Label(buffer,end,msg,text_label,sizeof(message));
+          char *result_history=Afficher_AES_Label(buffer,end,msg,text_label,16);
           Historique(history,result_history,TypeAES,"");
           bool_retour_dialog_annuler=0;
 
@@ -870,8 +869,8 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label){
   gtk_text_buffer_get_end_iter(buffer, &end);
   message=gtk_text_buffer_get_text(buffer,&start,&end,-1);
   history=malloc(sizeof(char*)*sizeof(message));
-
   strcpy(history,message);
+  
 
   if(TypeAES==NULL)
     printErreur("Vous devez choisir votre AES !");
@@ -887,30 +886,45 @@ void Decrypt_AES(GtkButton *button,GtkTextView *text_label){
           //GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
            gtk_entry_set_text(Entry_AES,keyHex);          
           gtk_dialog_run(GTK_DIALOG(AESDialog));
-        printf("\n");
 
+          uint8_t **MsgToAES; 
+          char * cs;
+          MsgToAES=malloc(sizeof(uint8_t*)*1);
+          MsgToAES[0]=malloc(sizeof(uint8_t*)*16);
+
+          for (int i = 0; (cs = strtok ((char*)message, " ")); ++i)
+          {
+            int tmp = hexadecimalToDecimal(cs); 
+            MsgToAES[0][i]=tmp;      
+            message = NULL;
+            
+          }
 
         if (bool_retour_dialog_annuler==0)
         {
-          printf("On passe Au chose serieux !\n");
           int lenChiffre = 1;
-          uint8_t ** msg = InvMain_AES(TypeAES,message,key,&lenChiffre,IV);
+          uint8_t ** msg = InvMain_AES(TypeAES,MsgToAES,key,&lenChiffre,IV,0);
 
           buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
           gtk_text_buffer_get_end_iter(buffer,&end);
           gtk_text_buffer_delete(buffer,&start,&end);
+                    printf("ICI\n");
 
-          char *result_history=Afficher_AES_Label(buffer,end,msg,text_label,sizeof(message));
+          
+          char *result_history=Afficher_AES_Label(buffer,end,msg,text_label,16);
           Historique(history,result_history,TypeAES,"");
           printf("ICI\n");
           bool_retour_dialog_annuler=0;
 
-        }         
+        }
+        free(MsgToAES);         
       }
+      
     }
 
   } 
   free(history);
+  
 }
 
 
