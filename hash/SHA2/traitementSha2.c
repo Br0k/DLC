@@ -5,6 +5,7 @@ void initialiserK_valeurConstante(mpz_t k_values[64]){
 	
 	for (int i = 0; i < 64; i++)
 		mpz_init(k_values[i]);
+
 	mpz_set_str(k_values[0],"428a2f98",16); mpz_set_str(k_values[1],"71374491",16); mpz_set_str(k_values[2],"b5c0fbcf",16); mpz_set_str(k_values[3],"e9b5dba5",16);
 	mpz_set_str(k_values[4],"3956c25b",16); mpz_set_str(k_values[5],"59f111f1",16); mpz_set_str(k_values[6],"923f82a4",16); mpz_set_str(k_values[7],"ab1c5ed5",16);
 	
@@ -61,7 +62,7 @@ void recuppererBlockPartie(char *block, int position, mpz_t data){
 
 void initialiserHashStructure(mpz_t valeurH[8]){
 	//printf("1");
-	char * chaine = malloc(32 * sizeof(char));
+	//char * chaine = malloc(32 * sizeof(char));
 	for (int i = 0 ; i < 8; i++)
 		mpz_init(valeurH[i]);
 	mpz_set_str(valeurH[0],"6a09e667",16);
@@ -92,7 +93,6 @@ int tailleAallouer(int tailleMessage){
 }
 char * initialiserBlockData(char* message,mpz_t blockData[64]){  // sha2
 	mpz_t donnee; 
-	int k = 1;
 	int taille = strlen(message);
 	int valeur_message_bit = taille *8;
 	char * elt = malloc(sizeof(char)) ;
