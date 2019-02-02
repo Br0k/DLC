@@ -1,8 +1,5 @@
 //gcc -o RSA_CRT RSA_CRT.c -lgmp -lcrypto && ./RSA_CRT
 
-#define TRUE 1
-#define FALSE 0
-
 #include <stdio.h>
 #include<string.h>
 #include "gmp.h"
@@ -93,6 +90,7 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	printf("-----BEGIN RSA PUBLIC KEY-----\n");
 	printf("%s\n", b64text);
 	printf("-----END RSA PUBLIC KEY-----\n");
+	//free(key);
 }
 
 void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e, mpz_t d) {
@@ -170,20 +168,16 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_invert(dq, e, qMoinsUn);
 	mpz_invert(ip, p, q);
 
-
 	formatRsaPublicKey(n, e);
 	
 }
 
-
 void RSA_Encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
 	mpz_powm(c, m, e, n);
-	gmp_printf("Chiffré = %Zd \n", c);
 }
 
 void RSA_Decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
 	mpz_powm(m, c, d, n);
-	gmp_printf("Déchiffré no Crt : %Zd \n", m);
 }
 
 void RSA_CRT_Decrypt(mpz_t m, mpz_t c, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip) {

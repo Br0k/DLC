@@ -14,6 +14,8 @@
 
 //RSA
 #include "RSA/RSA_CRT.c"
+#include <stdio.h>
+#include <stdlib.h>
 
 //includes de base
 #include <ctype.h>
@@ -1067,32 +1069,58 @@ void on_click_rsa(GtkButton *button, GtkTextView *text_label) {
 	
 	if (strcmp(rsa, "Génération de clés RSA") == 0) {
     RSA_CRT_Gen_Key(p, q, n, dp, dq, ip, k, e, d);
-	}
+
+    gtk_text_buffer_delete(buffer, &start, &end);
+    buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
+    char *key = mpz_get_str(NULL, 16, n);
+    /*char head[30];
+    char footer[28];
+    strcpy(head, "-----BEGIN RSA PUBLIC KEY-----\n");
+    strcpy(footer, "-----END RSA PUBLIC KEY-----");
+    strcpy(key, mpz_get_str(NULL, 10, n));
+    strcat(head, key);
+    strcat(head, footer);
+    printf("%s ", head);*/
+    gtk_text_buffer_insert(buffer, &end, key, -1);
+  }
 	if (strcmp(rsa, "Chiffrement RSA") == 0)
 	{
     input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
-    mpz_set_str(m, input, 10);
+    int valeur = 0;
+
+    char buf[strlen(input)];
+    char *finalInput = malloc(sizeof(char) * strlen(buf));
+    for (int i = 0; i < strlen(input); i++)
+    {
+      finalInput[i] = '\0';
+    }
+    for (int i = 0; i < strlen(input); i++) {
+      int j = (int) input[i];
+      valeur = sprintf(buf, "%d", j);
+      strcat(finalInput, buf);
+    }
+
+    mpz_set_str(m, finalInput, 10);
+
     RSA_Encrypt(c, m, e, n);
-    gmp_printf("%Zd ", m);
     chiffre = mpz_get_str(NULL, 10, c);
-    printf("%s", c);
 
     gtk_text_buffer_delete(buffer, &start, &end);
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
     gtk_text_buffer_insert(buffer, &end, chiffre, -1);
   }
-	if (strcmp(rsa, "Déchiffrement RSA") == 0)
-	{
+	if (strcmp(rsa, "Déchiffrement RSA") == 0) {
     input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
-    mpz_set_str(c, input, 10);
+
     RSA_Decrypt(m, c, d, n);
-
     char *dechiffre = mpz_get_str(NULL, 10, m);
-
+    printf("%s ", dechiffre);
+    
     gtk_text_buffer_delete(buffer, &start, &end);
     buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_label));
-    gtk_text_buffer_insert(buffer, &end, dechiffre, -1);
+    gtk_text_buffer_insert(buffer, &end, dechiffre, -1); 
   }
+
 	if (strcmp(rsa, "Déchiffrement RSA CRT") == 0)
 	{
     input = gtk_text_buffer_get_text(buffer, &start, &end, -1);
