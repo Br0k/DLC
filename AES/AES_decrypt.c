@@ -1,5 +1,3 @@
-//gcc -o AES_decrypt AES_decrypt.c -lgmp && ./AES_decrypt 8 11
-
 #include <stdint.h>
 #include <stdio.h>
 #include "gmp.h"
@@ -46,27 +44,6 @@ static const unsigned char Invsbox[256] = {
 	0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61,
 	0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 };
-
-/*
-static const unsigned char rcon[256] = {
-  0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 
-  0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 
-  0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 
-  0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 
-  0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 
-  0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 
-  0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 
-  0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 
-  0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 
-  0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 
-  0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 
-  0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 
-  0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 
-  0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 
-  0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 
-  0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d
-};
-*/
 
 static const unsigned char gmul9[] = {
   0x00,0x09,0x12,0x1b,0x24,0x2d,0x36,0x3f,0x48,0x41,0x5a,0x53,0x6c,0x65,0x7e,0x77,
@@ -216,7 +193,7 @@ void addRoundKey(int round, unsigned char* msg, unsigned char* key, int compteur
 
 	unsigned char tmp[17];
   sprintf((char*)tmp, "round[%2d].ik_sch", compteur);
-	//affichage(tmp,16, key);
+	affichage(tmp,16, key);
 	for (int i = 0; i < 16; ++i)
 	{
 		msg[i] ^= key[i];
@@ -277,40 +254,7 @@ void invSubBytes(unsigned char* travail) {
 	}
 }
 
-//unsigned char* AES_decrypt(unsigned char* key, unsigned char* cipher, int lenKey, int lenCipher) {
 unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, int expandedLenght){
-
-    //int Nr; //10, 12 ou 14 tours
-    //int Nk; // 4, 6 ou 8 colonnes en fonction de la taille de la clé
-    //int expandedLenght;
-
-    /*
-    switch(lenKey){
-        case 16:
-            Nr = 10;
-            Nk = 4;
-            expandedLenght = 176;
-            break;
-        case 24:
-            Nr = 12;
-            Nk = 6;
-            expandedLenght = 208;
-            break;
-        case 32:
-            Nr = 14;
-            Nk = 8;
-            expandedLenght = 240;
-            break;
-        default:
-            printf("erreur, la clé saisie est incorrecte.\n");
-            exit(0);
-            break;
-    }
-    */
-
-    //unsigned char keys[expandedLenght];
-    //InvKeyExpansion(key, keys, Nk, Nr);
-
 
     unsigned char travail[16];
     for (int i = 0; i < 16; ++i)
@@ -318,37 +262,6 @@ unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, i
     	travail[i] = cipher[i];
     }
     int lentravail = sizeof(travail) / sizeof(travail[0]);
-
-    /*
-    printf("KEY expanded\n");
-	int saut = 0;
-	for (int i = 0; i < expandedLenght; i++)
-	{
-		printf("%02X ",(unsigned char) *(keys+i));
-		saut++;
-		if (saut >= lenKey)
-		{
-			printf("\n");
-			saut = 0;
-		}	
-	}
-
-	printf("Round %d =", Nr);
-	for (int i = 0; i < lentravail; ++i)
-    {
-    	printf("%02X ",(unsigned char) *(travail+i));
-    }
-    printf("\n");
-	
-		
-
-	affichage("key    ", lenKey, key);
-	printf("\n");
-	affichage("chiffré", lenKey,cipher);
-	printf("\n");
-	*/
-
-    printf("INVERSE CIPHER (DECRYPT)\n");
 
     int compteur = 0;
     unsigned char tmp[17];
@@ -373,10 +286,7 @@ unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, i
 	    sprintf((char*)tmp, "round[%2d].is_box", compteur);
 	    affichage(tmp, lentravail, travail);
 		
-
     	addRoundKey(round,travail,keys+(16*round), compteur);
-
-    	//affichage("ik_sch ", lentravail, travail);
 
 	    invMixColumns(travail);
 	    sprintf((char*)tmp, "round[%2d].ik_add", compteur);
@@ -411,10 +321,6 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
 {
   int Nk=0,Nr=0,lenExpendKey=0; //Nb=4
   int lenAES;
-  //int lenPaddedMessage = len;
-  //char key[24]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
-  //char key[24]={142,115,176,247,218,14,100,82,200,16,243,43,128,144,121,229,98,248,234,210,82,44,107,123};
-  //char IV[16]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
   if(strcmp(AES,"AES 128")==0 || strcmp(AES,"AES 128 CBC")==0)
   {
@@ -436,8 +342,6 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
     lenExpendKey=240;
   }
 
-  printf("essai %d\n", *len);
-
   uint8_t **essai;
   if (*len == 1)
   {
@@ -455,7 +359,7 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
   char* cs;
   int compteur = 0;
 
-  for (int i = 0; cs = strtok ((char*)message, " "); ++i)
+  for (int i = 0; (cs = strtok ((char*)message, " ")); ++i)
   {
     int tmp = hexadecimalToDecimal(cs); 
     essai[i]=tmp;      
@@ -476,22 +380,14 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
     plaintext[i]=malloc(sizeof(uint8_t*)*16);
   }
   
-
-  printf("\n");
   for (int i = 0; i < compteur/16; ++i)
   {
     MsgToAES[i]=malloc(sizeof(uint8_t*)*16);
     for (int j = 0; j < 16; ++j)
     {
       MsgToAES[i][j] = (uint8_t)*(essai+(i*16)+j);
-      printf("%02X ", (unsigned char) *(essai+(i*16)+j)); 
     }
-    printf("\n");
-      
   }
-
-
-  printf("\n");
   
   unsigned char expandedKeys[lenExpendKey];
 
@@ -510,20 +406,9 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
     } 
   }
     
-  //paddedMessage = IV ^ paddedMessage
-  // if(IV != NULL)
-  // {
-  //   for (int i = 0; i <16; i++)
-  //   {
-  //     MsgToAES[0][i] ^= IV[i];
-  //   }
-  // }
-  printf("\nEncrypt message\n");
   int pos=0;
   for (int i = 0; i < compteur/16; i++)
   {   
-    //print_hex(MsgToAES[i]);
-    //plaintext[pos] = AES_encrypt(message[i],expandedKeys,Nr,lenExpendKey);
     plaintext[pos] = AES_decrypt(MsgToAES[i],expandedKeys,Nr,lenExpendKey);
     
     if (i == 0 && IV!=NULL)
@@ -533,18 +418,19 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
         plaintext[pos][j] ^= IV[j];
       }
     }
-    //paddedMessage+i = paddedMessage+i ^ plaintext
     if((i<compteur/16 && IV!=NULL)&& i != 0){
       for (int j = 0; j < 16; j++) 
       {
         printf("i %d, j %d\n", i, j);
         plaintext[i][j]=plaintext[pos][j]^MsgToAES[i-1][j];
-
       }
     }
     print_hex(plaintext[pos]);
     pos++;
   }
+
+  free(MsgToAES);
+  free(essai);
 
 
   return plaintext;
