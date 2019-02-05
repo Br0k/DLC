@@ -12,6 +12,39 @@
 #include <stdint.h>
 #include"Base64Encode.c"
 
+void formatRsaPrivateKey(mpz_t d, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip) {
+
+	printf("DEDANS!");
+	FILE *f = fopen("RSA/privateKey.txt", "w");
+	if (f == NULL)
+	{
+		printf("Error opening file!\n");
+		exit(1);
+	}
+
+	fprintf(f, "Private key: \n");
+
+	fprintf(f, "d: ");
+	mpz_out_str(f, 10, d );
+	fprintf(f, "\n");
+	fprintf(f, "p ");
+	mpz_out_str(f, 10, p);
+	fprintf(f, "\n");
+	fprintf(f, "q: ");
+	mpz_out_str(f, 10, q);
+	fprintf(f, "\n");
+	fprintf(f, "dp: ");
+	mpz_out_str(f, 10, dp);
+	fprintf(f, "\n");
+	fprintf(f, "dq: ");
+	mpz_out_str(f, 10, dq);
+	fprintf(f, "\n");
+	fprintf(f, "ip: ");
+	mpz_out_str(f, 10, ip);
+
+	fclose(f);
+}
+
 void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	mpz_t hex;
 	mpz_t mpzHeader;
@@ -32,6 +65,7 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 	char *strE = mpz_get_str(NULL, 10, e);
 
 	int size = 9 + strlen(strN) + 2 + strlen(strE);
+	printf("%d ", size);
 	unsigned char *key;
 
 	key = malloc (sizeof(int) * size);
@@ -78,21 +112,36 @@ void formatRsaPublicKey(mpz_t n, mpz_t e) {
 		//printf("%d ", footSize + i);
 	}
 	
-	
-	for (int i = 0; i < size; i++) {
-		//printf("%d ", key[i]);
-		//printf("-> %d \n", i);
-	}
 	key[size] = '\0';
 
 	size_t *output;
-	char *b64text = base64_encode(key, 632, &output);
+	//A MODIFIER
+	char *b64text = base64_encode(key, size, &output);
 	
 	//Base64Encode(key, size, &b64text);
 	//printf("%ld ", strlen(key));
-	printf("-----BEGIN RSA PUBLIC KEY-----\n");
-	printf("%s\n", b64text);
-	printf("-----END RSA PUBLIC KEY-----\n");
+
+	FILE *f = fopen("RSA/publicKey.txt", "w");
+	if (f == NULL)
+	{
+		printf("Error opening file!\n");
+		exit(1);
+	}
+
+	fprintf(f, "Public key: \n");
+	fprintf(f, "-----BEGIN RSA PUBLIC KEY-----\n");
+	for (int i = 0; i < strlen(b64text); i++) {
+		int tmp = strlen(b64text) / 4;
+		int tmp2 = strlen(b64text) / 2;
+		int tmp3 = (strlen(b64text) / 4 * 3);
+		if (i == tmp || i == tmp2 || i == tmp3) {
+			fprintf(f, "\n");
+		}
+		fprintf(f, "%c", b64text[i]);
+	}
+	fprintf(f, "\n-----END RSA PUBLIC KEY-----\n");
+
+	fclose(f);
 }
 
 void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mpz_t k, mpz_t e, mpz_t d) {
@@ -170,20 +219,16 @@ void RSA_CRT_Gen_Key(mpz_t p, mpz_t q, mpz_t n, mpz_t dp, mpz_t dq, mpz_t ip, mp
 	mpz_invert(dq, e, qMoinsUn);
 	mpz_invert(ip, p, q);
 
-
 	formatRsaPublicKey(n, e);
-	
+	formatRsaPrivateKey(d, p, q, dp, dq, ip);
 }
-
 
 void RSA_Encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
 	mpz_powm(c, m, e, n);
-	gmp_printf("Chiffré = %Zd \n", c);
 }
 
 void RSA_Decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
 	mpz_powm(m, c, d, n);
-	gmp_printf("Déchiffré no Crt : %Zd \n", m);
 }
 
 void RSA_CRT_Decrypt(mpz_t m, mpz_t c, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz_t ip) {
@@ -198,19 +243,15 @@ void RSA_CRT_Decrypt(mpz_t m, mpz_t c, mpz_t p, mpz_t q, mpz_t dp, mpz_t dq, mpz
 
 	mpz_powm(mp, c, dp, p);
 	mpz_powm(mq, c, dq, q);
-	gmp_printf("mp = %Zd \n", mp);
-	gmp_printf("mq = %Zd \n", mq);
 	mpz_sub(rop, mq, mp);
 	mpz_mul(rop, rop, ip);
 	mpz_mod(rop, rop, q);
 	mpz_mul(rop, rop, p);
 	mpz_add(m, rop, mp);
-	gmp_printf("Déchiffré = %Zd \n", m);
 }
 
 void RSA_Signature(mpz_t sign, mpz_t m, mpz_t d, mpz_t n) {
 	mpz_powm(sign, m, d, n);
-	gmp_printf("Sign = %Zd \n", sign);
 }
 
 void RSA_Verif(mpz_t m, mpz_t sign, mpz_t e, mpz_t n) {
@@ -262,4 +303,5 @@ int main(int argc, char *argv[]) {
 	RSA_Signature(sign, m, d, n);
 	RSA_Verif(m, sign, e, n);
 	return 0;
-}*/
+}
+*/

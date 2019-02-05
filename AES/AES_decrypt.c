@@ -439,7 +439,7 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
         plaintext[i][j]=plaintext[pos][j]^MsgToAES[i-1][j];
       }
     }
-    print_hex(plaintext[pos]);
+
     pos++;
   }
 

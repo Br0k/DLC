@@ -2,17 +2,16 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkDialog" id="DialogAES_CBC">
+  <object class="GtkDialog" id="DialogAES">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">AES</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
-      <object class="GtkBox" id="GtkBox">
+      <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -26,7 +25,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="Dialog_AES_CBC_click_Annuler" object="Key1" swapped="no"/>
+                <signal name="clicked" handler="Dialog_click_Annuler" object="keyAES" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -40,7 +39,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="DialogAES_CBC_click_Ok" object="Key1" swapped="no"/>
+                <signal name="clicked" handler="Dialog_click_Ok" object="keyAES" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -56,10 +55,143 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="Key1">
+          <object class="GtkBox">
+            <property name="height_request">-1</property>
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre clés AES ...</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkEntry" id="keyAES">
+                <property name="width_request">270</property>
+                <property name="height_request">-1</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="visibility">False</property>
+                <property name="invisible_char">•</property>
+                <property name="placeholder_text" translatable="yes">Entrez votre clé AES ...</property>
+                <property name="input_purpose">alpha</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
+                <property name="receives_default">True</property>
+                <property name="image">eye1</property>
+                <property name="relief">none</property>
+                <signal name="clicked" handler="on_change_key" object="keyAES" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkDialog" id="DialogAES_CBC">
+    <property name="can_focus">False</property>
+    <property name="resizable">False</property>
+    <property name="type_hint">dialog</property>
+    <property name="deletable">False</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Annuler</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="Dialog_AES_CBC_click_Annuler" object="keyAESCBC" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Accepter</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="DialogAES_CBC_click_Ok" object="keyAESCBC" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="height_request">-1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkEntry" id="keyAESCBC">
+                <property name="width_request">270</property>
+                <property name="height_request">35</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="visibility">False</property>
+                <property name="invisible_char">•</property>
+                <property name="placeholder_text" translatable="yes">Entrer votre clés AES ...</property>
+                <property name="input_purpose">alpha</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="focus_on_click">False</property>
+                <property name="receives_default">True</property>
+                <property name="image">eye</property>
+                <property name="relief">none</property>
+                <signal name="clicked" handler="on_change_key" object="keyAESCBC" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -68,10 +200,27 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="IV">
+          <object class="GtkBox">
+            <property name="height_request">-1</property>
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer votre IV ...</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkEntry" id="IV">
+                <property name="width_request">269</property>
+                <property name="height_request">38</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="placeholder_text" translatable="yes">Entrer votre IV ...</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -139,7 +288,7 @@
           <object class="GtkEntry" id="CRT_P">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez votre parametre p</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -151,7 +300,7 @@
           <object class="GtkEntry" id="CRT_Q">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez votre parametre q</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -163,7 +312,7 @@
           <object class="GtkEntry" id="CRT_DP">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez votre parametre dp</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -175,7 +324,7 @@
           <object class="GtkEntry" id="CRT_DQ">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez votre parametre dq</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -187,7 +336,7 @@
           <object class="GtkEntry" id="CRT_IP">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez votre parametre ip</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -255,7 +404,7 @@
           <object class="GtkEntry" id="Key_hash">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrer une clé : </property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -396,7 +545,7 @@
           <object class="GtkEntry" id="RSA_Key">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez une clé : </property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -464,7 +613,7 @@
           <object class="GtkEntry" id="RSA_Sign">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="text" translatable="yes">Entrer une clé : </property>
+            <property name="placeholder_text" translatable="yes">Entrez une clé : </property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1215,105 +1364,11 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">eye.png</property>
   </object>
-  <object class="GtkDialog" id="DialogAES">
+  <object class="GtkImage" id="eye1">
+    <property name="name">eye</property>
+    <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="resizable">False</property>
-    <property name="type_hint">dialog</property>
-    <property name="deletable">False</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="DialogAESv">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Annuler</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="Dialog_click_Annuler" object="keyAES" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Accepter</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="Dialog_click_Ok" object="keyAES" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="height_request">-1</property>
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkEntry" id="keyAES">
-                <property name="width_request">270</property>
-                <property name="height_request">-1</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="visibility">False</property>
-                <property name="invisible_char">*</property>
-                <property name="placeholder_text" translatable="yes">Entrer votre clés AES ...</property>
-                <property name="input_purpose">alpha</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="focus_on_click">False</property>
-                <property name="receives_default">True</property>
-                <property name="image">eye</property>
-                <property name="relief">none</property>
-                <signal name="clicked" handler="on_change_key" object="keyAES" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
+    <property name="pixbuf">eye.png</property>
   </object>
   <object class="GtkImage" id="hide">
     <property name="name">hide</property>
