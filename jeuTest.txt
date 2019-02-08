@@ -1,0 +1,13 @@
+--- STRINGS ---
+
+MD5(hello world) = 5eb63bbbe01eeed093cb22bb8f5acdc3
+SHA1(hello world) = 2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
+SHA2(hello world) = b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+HMAC-SHA1("what do ya want for nothing?" / Key = Jefe) = effcdf6ae5eb2fa2d27416d5f184df9c259a7c79
+
+--- FILES ---
+
+MD5(notes) = 0b24003405da7486c65154f8b0d681a6
+SHA1(notes) = f2c72f7dfb70b83024a37c195a1f5c6262bfab89
+SHA2(notes) = d2e5af57dffd768a7c42f03e457947325e7622cf6c14df766ad634190855649
+HMAC-SHA1(notes / Key = M4st3rhm@ckeY) = b8400fa4cd34b7ab1445a044914c051d49319657
