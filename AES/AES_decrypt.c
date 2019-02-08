@@ -317,7 +317,7 @@ unsigned char* AES_decrypt(unsigned char* cipher, unsigned char* keys, int Nr, i
     return plaintext;
 }
 
-uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_t *IV)
+uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_t *IV,int boolean)
 {
   int Nk=0,Nr=0,lenExpendKey=0; //Nb=4
   int lenAES;
@@ -359,13 +359,27 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
   char* cs;
   int compteur = 0;
 
-  for (int i = 0; (cs = strtok ((char*)message, " ")); ++i)
+  if(boolean==1)
   {
-    int tmp = hexadecimalToDecimal(cs); 
-    essai[i]=tmp;      
-    message = NULL;
-    compteur++;
+    for (int i = 0; (cs = strtok ((char*)message, " ")); ++i)
+    {
+      int tmp = hexadecimalToDecimal(cs); 
+      essai[i]=tmp;      
+      message = NULL;
+      compteur++;
+    }
+    printf("%d\n",compteur );
+
+  }else{
+    for (int i = 0; i < 16; ++i)
+    {
+      printf("%d\n",message[0][i]) ;
+      essai[i]=message[0][i];
+      compteur++;
+    }
   }
+
+ 
 
   *len = compteur;
 
@@ -425,12 +439,12 @@ uint8_t**  InvMain_AES(char* AES,uint8_t **message,uint8_t * key,int *len,uint8_
         plaintext[i][j]=plaintext[pos][j]^MsgToAES[i-1][j];
       }
     }
-    print_hex(plaintext[pos]);
+
     pos++;
   }
 
-  free(MsgToAES);
-  free(essai);
+  printf("%d\n",compteur );
+  
 
 
   return plaintext;
