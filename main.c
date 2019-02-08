@@ -73,6 +73,7 @@ GtkWidget *dialogRSAS;
 GtkWidget *dialogCRT;
 GtkWidget *hide_image;
 GtkWidget *eye_image;
+GtkWidget * AESDialog;
 
 GtkEntry *Entry_AES_IV;
 GtkEntry *Entry_AES;
@@ -179,6 +180,7 @@ int main(int argc, char *argv []){
   hide_image = GTK_WIDGET(gtk_builder_get_object(builder,"hide"));
   eye_image = GTK_WIDGET(gtk_builder_get_object(builder,"eye"));
   Entry_AES_KEY = GTK_WIDGET(gtk_builder_get_object(builder,"keyAES"));
+  Entry_AES_KEY_CBC = GTK_WIDGET(gtk_builder_get_object(builder,"keyAESCBC"));
 
   key = (unsigned char *) malloc(sizeof(unsigned char*)*16);
   keyHex = (unsigned char *) calloc(16*3,sizeof(unsigned char*)*16*3);
@@ -481,9 +483,7 @@ void Dialog_click_Ok(GtkButton *button,GtkEntry *entry){
     for (int i = 0; (cs = strtok ((char*)entry_text, " ")); i++)
     {
       int tmp = hexadecimalToDecimal(cs); 
-      
       key[i]=tmp;
-      //printf("%02X ", (unsigned char) *(key+i));       
       entry_text = NULL;
     
     }
@@ -528,21 +528,19 @@ void DialogAES_CBC_click_Ok(GtkButton *button,GtkEntry *Key_Entry){
       char* character;
       for (int i = 0; (character = strtok ((char*)entry_text_IV, " ")); i++)
         {
-          int tmp = hexadecimalToDecimal(character); 
-          
+          int tmp = hexadecimalToDecimal(character);           
           IV[i]=tmp;
           printf("%02X ", (unsigned char) *(IV+i));       
-          entry_text_IV = NULL;
-          
+          entry_text_IV = NULL;          
         }
 
-      bool_retour_dialog_annuler=0;
-      free(entry_text_key);
-    free(entry_text_IV);
+      
     }else{
       printErreur("Taille de l'IV incorrecte !");
     }
-    
+    printf("je passe par la\n");
+    bool_retour_dialog_annuler=0;
+    gtk_widget_hide((GtkWidget*)dialog_AES_CBC);
   }
 }
 
@@ -824,7 +822,6 @@ void Encrypt_AES(GtkButton *button,GtkTextView *text_label){
           //GtkDialog * AESDialog = ReturnDialogAES(TypeAES);
           gtk_entry_set_text(Entry_AES,keyHex);          
           gtk_dialog_run(GTK_DIALOG(AESDialog));
-
         if (bool_retour_dialog_annuler==0)
         {
           uint8_t ** msg = Main_AES(TypeAES,MsgToAES,key,1,IV); 

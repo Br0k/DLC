@@ -96,19 +96,19 @@ void ShiftRows(unsigned char* state){
 	tmp[8] = state[8];
 	tmp[12] = state[12];
 
-	// Second row shift right once (idx = (idx + 4) % 16)
+	// Second row shift right once
 	tmp[1] = state[5];
 	tmp[5] = state[9];
 	tmp[9] = state[13];
 	tmp[13] = state[1];
 
-	// Third row shift right twice (idx = (idx +/- 8) % 16)
+	// Third row shift right twice 
 	tmp[2] = state[10];
 	tmp[6] = state[14];
 	tmp[10] = state[2];
 	tmp[14] = state[6];
 
-	// Fourth row shift right three times (idx = (idx - 4) % 16)
+	// Fourth row shift right three times 
 	tmp[3] = state[15];
 	tmp[7] = state[3];
 	tmp[11] = state[7];
@@ -121,6 +121,11 @@ void ShiftRows(unsigned char* state){
 }
 
 void MixColums(unsigned char* state){
+
+	//		 	2	3	1	1
+	//			1	2	3	1
+	//			1	1	2	3
+	//			3	1	1	2 
 
 	unsigned char tmp[16];
 
